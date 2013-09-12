@@ -1,0 +1,68 @@
+Patch xs0.3.3 to xs0.3.4
+************************
+	- some minor changes
+	
+	
+Patch xs0.3.2 to xs0.3.3
+************************
+
+General:
+
+	- deleted unnecessary functions startClock(), writerStdOut(), collectorStdOut(), collectorStarted()
+	- cleaned up source code
+	- fixed bug that the new preference settings are only available for the first ten detectors
+
+"Listmode Run"-tab/Listmode Run:
+
+	- fixed bug that the rates haven't been updated if one has started the collector before the writer
+	- fixed bug that the Runfolders were created in the wrong directory after one has loaded a *.xss-file
+	- fixed "creation of Runfolders"-bug for run numbers above 10
+	- added tooltips for the collector parameter checkboxes and the run/start/kill/stop-buttons
+
+"Listmode View"-tab:
+
+	- added button for coming function to compare the last two subruns	
+	- "View latest"- and "View all"-buttons will now only work for the spectra of the detector types which were selected by the corresponding comboBox
+
+"Mca Run"-tab/MCA mode:
+
+	- added button for coming function to visualize rates in MCA mode
+
+plus some minor changes ...
+
+
+
+Patch xs0.3.1 to xs0.3.2
+************************
+
+General:
+
+	- fixed more "/home/experiment/"-residuals with enviroment variables
+
+
+"Listmode Run"-tab/Listmode Run:
+
+	- fixed bug that psaCheckBox wasn't frozen out when the collector was started
+
+
+"Rates plot"-tab: 
+
+	- added menu which pops up if there is a rightclick on the diagram to let the user choose which rates should be visible and which not (user has to adjust the detectorType before)
+
+
+"MCA Run"-tab/MCA mode: 
+
+	- fixedTime mca mode will now also start mb_mca_start and not mb_mca anymore; the time interval is now controlled via a QTimer called mcaTimer which calls the slot mcaClock() every second;
+	- the mcaStartButton and the mcaTimeBox are not enabled after one has activated the "Start"-button in fixedTime mode until the "Read out"-button has been activated
+	- "Save spectra"-button in mcaTab saves now also the "DGF*.dat"-files 
+	- fixed MCA button bugs
+	- added MessageBox which will appear after MCA Run timed out
+	- added a fixed time mca countdown in the mcaTimeBox
+
+
+
+Patch xs0.3 to xs0.3.1
+**********************
+
+- added option "PSA Mode" to listmode Run-tab which will start the collector in compression mode 2 (-x flag)
+- set COINCWAIT default value from 50 to 55
