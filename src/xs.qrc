@@ -1,0 +1,12 @@
+ <!DOCTYPE RCC><RCC version="1.0">
+ <qresource>
+     <file>../img/scaler.png</file>
+     <file>../img/rates.png</file>
+     <file>../img/start.png</file>
+     <file>../img/booted.png</file>
+     <file>../img/editsourceconf.png</file>
+     <file>../img/readymca.png</file>
+     <file>../img/dgfconfig.png</file>
+     <file>../img/running.png</file>
+ </qresource>
+ </RCC>
