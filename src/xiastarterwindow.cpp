@@ -590,7 +590,13 @@ void XiaStarterWindow::plotRates(){
     ui->ratesPlot->clearGraphs();
 	ui->ratesPlot->setRangeDrag(Qt::Vertical);
     ui->ratesPlot->setRangeZoom(Qt::Vertical);
-	ui->ratesPlot->xAxis->setRange(xs->ratestime.at(0), xs->ratestime.at(xs->ratestime.size()-1));
+    if(xs->ratestime.size()>2){
+        ui->ratesPlot->xAxis->setRange(xs->ratestime.at(0), xs->ratestime.at(xs->ratestime.size()-1));
+    }
+    else{
+        qDebug() << "ERROR: ratestime.size() is too small to adjust xAxis of ratesPlot! (XiaStarterWindow::plotRates)";
+    }
+
 	ui->ratesPlot->xAxis->setLabel("Time elapsed [s]");
     ui->ratesPlot->yAxis->setLabel("Current rate [Hz]");
 
@@ -603,90 +609,104 @@ void XiaStarterWindow::plotRates(){
     
     int i=0;
     for(int j=0; j<xs->size; j++){
-    
-        if((showRatesFor==0) || (showRatesFor==1 && xs->det.at(j).getDetType()=="Germanium") || (showRatesFor==2 && xs->det.at(j).getDetType()=="Silicon")){
-            ui->ratesPlot->addGraph();
-            switch(i){
-            case 0:
-                ui->ratesPlot->graph(0)->setPen(QPen(Qt::red));
-                ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                break;
-            case 1:
-                ui->ratesPlot->graph(1)->setPen(QPen(Qt::green));
-                ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                break;
-            case 2:
-                ui->ratesPlot->graph(2)->setPen(QPen(Qt::blue));
-                ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                break;
-            case 3:
-                ui->ratesPlot->graph(3)->setPen(QPen(Qt::cyan));
-                ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                break;
-            case 4:
-                ui->ratesPlot->graph(4)->setPen(QPen(Qt::darkCyan));
-                ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                break;
-            case 5:
-                ui->ratesPlot->graph(5)->setPen(QPen(Qt::magenta));
-                ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                break;
-            case 6:
-                ui->ratesPlot->graph(6)->setPen(QPen(Qt::darkMagenta));
-                ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                break;
-            case 7:
-                ui->ratesPlot->graph(7)->setPen(QPen(Qt::black));
-                ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                break;
-            case 8:
-                ui->ratesPlot->graph(8)->setPen(QPen(Qt::darkYellow));
-                ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                break;
-            case 9:
-                ui->ratesPlot->graph(9)->setPen(QPen(Qt::gray));
-                ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                break;
-            case 10:
-                ui->ratesPlot->graph(10)->setPen(QPen(Qt::darkBlue));
-                ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                break;
-            case 11:
-                ui->ratesPlot->graph(11)->setPen(QPen(Qt::darkRed));
-                ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                break;
-            case 12:
-                ui->ratesPlot->graph(12)->setPen(QPen(Qt::yellow));
-                ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                break;
-            case 13:
-                ui->ratesPlot->graph(13)->setPen(QPen(Qt::darkGreen));
-                ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                break;
-            case 14:
-                ui->ratesPlot->graph(14)->setPen(QPen(Qt::darkGray));
-                ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                break;
-            case 15:
-                ui->ratesPlot->graph(15)->setPen(QPen(Qt::lightGray));
-                ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                break;
-            case 16:
-                ui->ratesPlot->graph(16)->setPen(QPen(Qt::red));
-                ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                break;
-            case 17:
-                ui->ratesPlot->graph(17)->setPen(QPen(Qt::red));
-                ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                break;
-            case 18:
-                ui->ratesPlot->graph(18)->setPen(QPen(Qt::red));
-                ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                break;
-            }
+        if(xs->det.size()>j){
+            if((showRatesFor==0) || (showRatesFor==1 && xs->det.at(j).getDetType()=="Germanium") || (showRatesFor==2 && xs->det.at(j).getDetType()=="Silicon")){
+                ui->ratesPlot->addGraph();
+                if(xs->detnames.size()>j){
+                    switch(i){
+                    case 0:
+                        ui->ratesPlot->graph(0)->setPen(QPen(Qt::red));
+                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                        break;
+                    case 1:
+                        ui->ratesPlot->graph(1)->setPen(QPen(Qt::green));
+                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                        break;
+                    case 2:
+                        ui->ratesPlot->graph(2)->setPen(QPen(Qt::blue));
+                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                        break;
+                    case 3:
+                        ui->ratesPlot->graph(3)->setPen(QPen(Qt::cyan));
+                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                        break;
+                    case 4:
+                        ui->ratesPlot->graph(4)->setPen(QPen(Qt::darkCyan));
+                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                        break;
+                    case 5:
+                        ui->ratesPlot->graph(5)->setPen(QPen(Qt::magenta));
+                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                        break;
+                    case 6:
+                        ui->ratesPlot->graph(6)->setPen(QPen(Qt::darkMagenta));
+                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                        break;
+                    case 7:
+                        ui->ratesPlot->graph(7)->setPen(QPen(Qt::black));
+                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                        break;
+                    case 8:
+                        ui->ratesPlot->graph(8)->setPen(QPen(Qt::darkYellow));
+                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                        break;
+                    case 9:
+                        ui->ratesPlot->graph(9)->setPen(QPen(Qt::gray));
+                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                        break;
+                    case 10:
+                        ui->ratesPlot->graph(10)->setPen(QPen(Qt::darkBlue));
+                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                        break;
+                    case 11:
+                        ui->ratesPlot->graph(11)->setPen(QPen(Qt::darkRed));
+                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                        break;
+                    case 12:
+                        ui->ratesPlot->graph(12)->setPen(QPen(Qt::yellow));
+                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                        break;
+                    case 13:
+                        ui->ratesPlot->graph(13)->setPen(QPen(Qt::darkGreen));
+                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                        break;
+                    case 14:
+                        ui->ratesPlot->graph(14)->setPen(QPen(Qt::darkGray));
+                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                        break;
+                    case 15:
+                        ui->ratesPlot->graph(15)->setPen(QPen(Qt::lightGray));
+                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                        break;
+                    case 16:
+                        ui->ratesPlot->graph(16)->setPen(QPen(Qt::red));
+                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                        break;
+                    case 17:
+                        ui->ratesPlot->graph(17)->setPen(QPen(Qt::red));
+                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                        break;
+                    case 18:
+                        ui->ratesPlot->graph(18)->setPen(QPen(Qt::red));
+                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                        break;
+                    default:
+                        ui->ratesPlot->graph(i)->setPen(QPen(Qt::red));
+                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                        break;
+                    }
+                }
+                else{
+                    qDebug() << "ERROR: detnames.at(j) does not exist! j=" << j << " (XiaStarterWindow::plotRates())";
+                    continue;
+                }
 
-            ui->ratesPlot->graph(i)->setData(xs->ratestime, xs->rates.at(j));
-            i++;
+                ui->ratesPlot->graph(i)->setData(xs->ratestime, xs->rates.at(j));
+                i++;
+            }
+        }
+        else{
+            qDebug() << "ERROR: det.at(j) does not exist! j=" << j << " (XiaStarterWindow::plotRates())";
         }
     }
 
@@ -725,33 +745,53 @@ void XiaStarterWindow::plotRates(){
     double d_rate;
 
     for(unsigned int i=0; i<xs->rates.size(); i++){
-       ticks << i+1;
-       labels << xs->detnames.at(i);
-       d_rate=xs->rates.at(i).at(xs->rates.at(i).size()-1);
 
-		if(d_rate < xs->det.at(i).getIratesLimit()*0.67){
-            data_b.push_back(d_rate);
-            data_y.push_back(0);
-            data_r.push_back(0);
-        }
+       ticks << i+1;
+
+       if(xs->detnames.size()>i){
+        labels << xs->detnames.at(i);
+       }
+       else{
+           qDebug() << "ERROR: detnames.at(i) does not exist! i="<<i<<" (XiaStarterWindow::plotRates()";
+       }
+
+        d_rate=xs->rates.at(i).at(xs->rates.at(i).size()-1);
+
+        if(xs->det.size()>i){
+
+            if(d_rate < xs->det.at(i).getIratesLimit()*0.67){
+                data_b.push_back(d_rate);
+                data_y.push_back(0);
+                data_r.push_back(0);
+            }
     
-		if(d_rate >= xs->det.at(i).getIratesLimit()*0.67 && d_rate < xs->det.at(i).getIratesLimit()){
-			data_b.push_back(0);
-            data_y.push_back(d_rate);
-            data_r.push_back(0);
-        }
+            if(d_rate >= xs->det.at(i).getIratesLimit()*0.67 && d_rate < xs->det.at(i).getIratesLimit()){
+                data_b.push_back(0);
+                data_y.push_back(d_rate);
+                data_r.push_back(0);
+            }
        
-		if(d_rate >= xs->det.at(i).getIratesLimit()){
-            data_b.push_back(0);
-            data_y.push_back(0);
-            data_r.push_back(d_rate);
+            if(d_rate >= xs->det.at(i).getIratesLimit()){
+                data_b.push_back(0);
+                data_y.push_back(0);
+                data_r.push_back(d_rate);
+            }
+        }
+        else{
+            qDebug() << "ERROR: det.at(i) does not exist! i="<<i<<" (XiaStarterWindow::plotRates)";
         }
 
         s_rate.setNum(d_rate);
 
         QCPItemText *labeldummy = new QCPItemText(ui->scalerPlot);
         ratelabels.push_back(labeldummy);
-        ui->scalerPlot->addItem(ratelabels.at(i));
+        if(ratelabels.size()>i){
+            ui->scalerPlot->addItem(ratelabels.at(i));
+        }
+        else{
+            qDebug() << "ERROR: ratelabels.at(i) does not exist! i="<<i<<" (XiaStarterWindow::plotRates())";
+        }
+
         ratelabels.at(i)->setText(s_rate);
         ratelabels.at(i)->setFont(QFont(font().family(), 7));
         ratelabels.at(i)->setPositionAlignment(Qt::AlignBottom|Qt::AlignHCenter);
@@ -808,7 +848,7 @@ void XiaStarterWindow::collectorStatus(QProcess::ProcessState state){
         red1.setColor(ui->collectorLabel->backgroundRole(), Qt::red);
         red1.setColor(ui->collectorLabel->foregroundRole(), Qt::black);
         ui->collectorLabel->setPalette(red1);
-        ui->collectorLabel->setText("Not Running");
+        ui->collectorLabel->setText("Not Running");        
         break;
     }
 
@@ -1310,21 +1350,53 @@ void XiaStarterWindow::writeInfoBox(QString dataFile, QString runNum, QString su
     switch(ui->detCombo->currentIndex()){
         case 0:
             for(unsigned int i=0; i<xs->det.size(); i++){
-                info+="\t"+xs->detnames.at(i) + ":\t" + QString::number(xs->rates.at(i).last())+"\n";
+                if(xs->rates.size()>i){
+                    if(xs->detnames.size()>i){
+                        info+="\t"+xs->detnames.at(i) + ":\t" + QString::number(xs->rates.at(i).last())+"\n";
+                    }
+                    else{
+                        qDebug() << "ERROR: detnames.at(i) does not exist! i="<<i<<" (XiaStarterWindow::writeInfoBox())";
+                    }
+                }
+                else{
+                    qDebug() << "ERROR: rates.at(i) does not exist! i="<<i<<" (XiaStarterWindow::writeInfoBox())";
+                }
             }
             break;
 
         case 1:
             for(unsigned int i=0; i<xs->det.size(); i++){
-                if(xs->det.at(i).getDetType()=="Germanium")
-                    info+="\t"+xs->detnames.at(i) + ":\t" + QString::number(xs->rates.at(i).last())+"\n";
+                if(xs->det.at(i).getDetType()=="Germanium"){
+                    if(xs->rates.size()>i){
+                        if(xs->detnames.size()>i){
+                            info+="\t"+xs->detnames.at(i) + ":\t" + QString::number(xs->rates.at(i).last())+"\n";
+                        }
+                        else{
+                            qDebug() << "ERROR: detnames.at(i) does not exist! i="<<i<<" (XiaStarterWindow::writeInfoBox())";
+                        }
+                    }
+                    else{
+                        qDebug() << "ERROR: rates.at(i) does not exist! i="<<i<<" (XiaStarterWindow::writeInfoBox())";
+                    }
+                }
             }
             break;
 
         case 2:
             for(unsigned int i=0; i<xs->det.size(); i++){
-                if(xs->det.at(i).getDetType()=="Silicon")
-                    info+="\t"+xs->detnames.at(i) + ":\t" + QString::number(xs->rates.at(i).last())+"\n";
+                if(xs->det.at(i).getDetType()=="Silicon"){
+                    if(xs->rates.size()>i){
+                        if(xs->detnames.size()>i){
+                            info+="\t"+xs->detnames.at(i) + ":\t" + QString::number(xs->rates.at(i).last())+"\n";
+                        }
+                        else{
+                            qDebug() << "ERROR: detnames.at(i) does not exist! i="<<i<<" (XiaStarterWindow::writeInfoBox())";
+                        }
+                    }
+                    else{
+                        qDebug() << "ERROR: rates.at(i) does not exist! i="<<i<<" (XiaStarterWindow::writeInfoBox())";
+                    }
+                }
             }
             break;
     }
@@ -1393,86 +1465,101 @@ void XiaStarterWindow::plotMCAFiles(){
 
     for(unsigned int i=0; i<mcaCounts.size(); i++){
         ui->mcaPlot->addGraph();
-        switch(i){
-        case 0:
-            ui->mcaPlot->graph(0)->setPen(QPen(Qt::red));
-            ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
-            break;
-        case 1:
-            ui->mcaPlot->graph(1)->setPen(QPen(Qt::green));
-            ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
-            break;
-        case 2:
-            ui->mcaPlot->graph(2)->setPen(QPen(Qt::blue));
-            ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
-            break;
-        case 3:
-            ui->mcaPlot->graph(3)->setPen(QPen(Qt::cyan));
-            ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
-            break;
-        case 4:
-            ui->mcaPlot->graph(4)->setPen(QPen(Qt::darkCyan));
-            ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
-            break;
-        case 5:
-            ui->mcaPlot->graph(5)->setPen(QPen(Qt::magenta));
-            ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
-            break;
-        case 6:
-            ui->mcaPlot->graph(6)->setPen(QPen(Qt::darkMagenta));
-            ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
-            break;
-        case 7:
-            ui->mcaPlot->graph(7)->setPen(QPen(Qt::black));
-            ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
-            break;
-        case 8:
-            ui->mcaPlot->graph(8)->setPen(QPen(Qt::darkYellow));
-            ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
-            break;
-        case 9:
-            ui->mcaPlot->graph(9)->setPen(QPen(Qt::gray));
-            ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
-            break;
-        case 10:
-            ui->mcaPlot->graph(10)->setPen(QPen(Qt::darkBlue));
-            ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
-            break;
-        case 11:
-            ui->mcaPlot->graph(11)->setPen(QPen(Qt::darkRed));
-            ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
-            break;
-        case 12:
-            ui->mcaPlot->graph(12)->setPen(QPen(Qt::yellow));
-            ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
-            break;
-        case 13:
-            ui->mcaPlot->graph(13)->setPen(QPen(Qt::darkGreen));
-            ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
-            break;
-        case 14:
-            ui->mcaPlot->graph(14)->setPen(QPen(Qt::darkGray));
-            ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
-            break;
-        case 15:
-            ui->mcaPlot->graph(15)->setPen(QPen(Qt::lightGray));
-            ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
-            break;
-        case 16:
-            ui->mcaPlot->graph(16)->setPen(QPen(Qt::red));
-            ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
-            break;
-        case 17:
-            ui->mcaPlot->graph(17)->setPen(QPen(Qt::red));
-            ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
-            break;
-        case 18:
-            ui->mcaPlot->graph(18)->setPen(QPen(Qt::red));
-            ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
-            break;
+        if(xs->detnames.size()>i){
+            switch(i){
+            case 0:
+                ui->mcaPlot->graph(0)->setPen(QPen(Qt::red));
+                ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
+                break;
+            case 1:
+                ui->mcaPlot->graph(1)->setPen(QPen(Qt::green));
+                ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
+                break;
+            case 2:
+                ui->mcaPlot->graph(2)->setPen(QPen(Qt::blue));
+                ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
+                break;
+            case 3:
+                ui->mcaPlot->graph(3)->setPen(QPen(Qt::cyan));
+                ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
+                break;
+            case 4:
+                ui->mcaPlot->graph(4)->setPen(QPen(Qt::darkCyan));
+                ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
+                break;
+            case 5:
+                ui->mcaPlot->graph(5)->setPen(QPen(Qt::magenta));
+                ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
+                break;
+            case 6:
+                ui->mcaPlot->graph(6)->setPen(QPen(Qt::darkMagenta));
+                ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
+                break;
+            case 7:
+                ui->mcaPlot->graph(7)->setPen(QPen(Qt::black));
+                ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
+                break;
+            case 8:
+                ui->mcaPlot->graph(8)->setPen(QPen(Qt::darkYellow));
+                ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
+                break;
+            case 9:
+                ui->mcaPlot->graph(9)->setPen(QPen(Qt::gray));
+                ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
+                break;
+            case 10:
+                ui->mcaPlot->graph(10)->setPen(QPen(Qt::darkBlue));
+                ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
+                break;
+            case 11:
+                ui->mcaPlot->graph(11)->setPen(QPen(Qt::darkRed));
+                ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
+                break;
+            case 12:
+                ui->mcaPlot->graph(12)->setPen(QPen(Qt::yellow));
+                ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
+                break;
+            case 13:
+                ui->mcaPlot->graph(13)->setPen(QPen(Qt::darkGreen));
+                ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
+                break;
+            case 14:
+                ui->mcaPlot->graph(14)->setPen(QPen(Qt::darkGray));
+                ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
+                break;
+            case 15:
+                ui->mcaPlot->graph(15)->setPen(QPen(Qt::lightGray));
+                ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
+                break;
+            case 16:
+                ui->mcaPlot->graph(16)->setPen(QPen(Qt::red));
+                ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
+                break;
+            case 17:
+                ui->mcaPlot->graph(17)->setPen(QPen(Qt::red));
+                ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
+                break;
+            case 18:
+                ui->mcaPlot->graph(18)->setPen(QPen(Qt::red));
+                ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
+                break;
+            default:
+                ui->mcaPlot->graph(i)->setPen(QPen(Qt::red));
+                ui->mcaPlot->graph(i)->setName(xs->detnames.at(i));
+                break;
+            }
+        }
+        else{
+            qDebug() << "ERROR: detnames.at(i) does not exist! i=" << i << " (XiaStarterWindow::plotMCAFiles())";
+            continue;
         }
 
-        ui->mcaPlot->graph(i)->setData(mcaChannels.at(i), mcaCounts.at(i));
+        if(mcaChannels.size()>i){
+            ui->mcaPlot->graph(i)->setData(mcaChannels.at(i), mcaCounts.at(i));
+        }
+        else{
+            qDebug() << "ERROR: mcaChannels.at(i) does not exist! i=" << i << " (XiaStarterWindow::plotMCAFiles())";
+        }
     }
 
     ui->mcaPlot->rescaleAxes();

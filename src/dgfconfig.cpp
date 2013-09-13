@@ -76,10 +76,15 @@ dgfConfig::~dgfConfig()
 void dgfConfig::showPsaSettings(){
 
     QVector<int> input;
-    input.push_back(detSettings.at(currentIndex).psaLength);
-    input.push_back(detSettings.at(currentIndex).userDelay);
-    input.push_back(detSettings.at(currentIndex).psaOffset);
-    input.push_back(detSettings.at(currentIndex).traceLength);
+    if(detSettings.size()>currentIndex){
+      input.push_back(detSettings.at(currentIndex).psaLength);
+      input.push_back(detSettings.at(currentIndex).userDelay);
+      input.push_back(detSettings.at(currentIndex).psaOffset);
+      input.push_back(detSettings.at(currentIndex).traceLength);
+    }
+    else{ 
+      qDebug() << "ERROR: detSettings.at(currentIndex) does not exist! currentIndex="<<currentIndex<<" (dgfConfig::showPsaSettings())";
+    }
 
     QEventLoop b;
     psaSettings psaDialog;
@@ -92,10 +97,15 @@ void dgfConfig::showPsaSettings(){
 }
 
 void dgfConfig::psaSettingsChanged(QVector<int> values){
-    detSettings.at(currentIndex).psaLength=values.at(0);
-    detSettings.at(currentIndex).userDelay=values.at(1);
-    detSettings.at(currentIndex).psaOffset=values.at(2);
-    detSettings.at(currentIndex).traceLength=values.at(3);
+    if(detSettings.size()>currentIndex){
+      detSettings.at(currentIndex).psaLength=values.at(0);
+      detSettings.at(currentIndex).userDelay=values.at(1);
+      detSettings.at(currentIndex).psaOffset=values.at(2);
+      detSettings.at(currentIndex).traceLength=values.at(3);
+    }
+    else{ 
+      qDebug() << "ERROR: detSettings.at(currentIndex) does not exist! currentIndex="<<currentIndex<<" (dgfConfig::psaSettingsChanged())";
+    }
 
     if(detList->at(currentIndex).right(1)!=("*")){
         QString blub=detList->at(currentIndex)+"*";
@@ -264,83 +274,88 @@ void dgfConfig::readSetting(QString det){
 void dgfConfig::writeSetting(QString detName, int detNumber){
     QString content;
     QString filePath=configDir+"dgf_config_"+detName+".setup";
+    
+    if(detSettings.size() > detNumber){
 
-    content="# DGF setup file " + filePath + "\n\n";
-    content+="# Polarity of signal (1 = pos, 0 = neg)\n";
-    content+="POLARITY "+ QString::number(detSettings.at(detNumber).positivePolarity) + "\n\n";
-    content+="# Tau of preamplifier in us\n";
-    content+="TAU " + QString::number(detSettings.at(detNumber).tau) + " \n\n";
-    content+="# Gain in V/V\n";
-    content+="GAIN "+ QString::number(detSettings.at(detNumber).gain) + "\n\n";
-    content+="# DC offset in Volts\n";
-    content+="OFFSET " + QString::number(detSettings.at(detNumber).offset) + "\n\n";
-    content+="# Length of slow filter in us\n";
-    content+="SLOWLENGTH " + QString::number(detSettings.at(detNumber).slowLength) + "\n\n";
-    content+="# Gap of slow filter in us\n";
-    content+="SLOWGAP " + QString::number(detSettings.at(detNumber).slowGap) + "\n\n";
-    content+="# Baseline averaging 2^x\n";
-    content+="MCABASEAV "+ QString::number(detSettings.at(detNumber).baselineAveraging) + "\n\n";
-    content+="# Length of fast filter in ticks\n";
-    content+"FASTLENGTH " + QString::number(detSettings.at(detNumber).fastLength) + "\n\n";
-    content+="# Gap of fast filter in ticks\n";
-    content+="FASTGAP " + QString::number(detSettings.at(detNumber).fastGap) + "\n\n";
-    content+="# Threshold in ADC values\n";
-    content+="THRESHOLD " + QString::number(detSettings.at(detNumber).threshold) + "\n\n";
-    content+="# Tracelength in ticks\n";
-    content+="TRACELENGTH " + QString::number(detSettings.at(detNumber).traceLength) + "\n\n";
-    content+="# Pulse shape analysis length in ticks\n";
-    content+="PSALENGTH " + QString::number(detSettings.at(detNumber).psaLength) + "\n\n";
-    content+="# User delay\n";
-    content+="USERDELAY " + QString::number(detSettings.at(detNumber).userDelay) + "\n\n";
-    content+="# Pulse shape analysis offset in ticks\n";
-    content+="PSAOFFSET " + QString::number(detSettings.at(detNumber).psaOffset) + "\n\n";
-    content+="# MCA bining 2^x\n";
-    content+="MCAENBIN " + QString::number(detSettings.at(detNumber).mcaBining) + "\n\n";
-    content+="# MCA threshold\n";
-    content+="MCACFDTHR " + QString::number(detSettings.at(detNumber).mcaThreshold) + "\n\n";
-    content+="# CFD trigger delay\n";
-    content+="CFDTRIGGERDELAY " + QString::number(detSettings.at(detNumber).cfdTriggerDelay) + "\n\n";
-    content+="# CFD delay\n";
-    content+="CFDDELAY " + QString::number(detSettings.at(detNumber).cfdDelay) + "\n\n";
-    content+="# CFD threshold\n";
-    content+="CFDTHRESHOLD " + QString::number(detSettings.at(detNumber).cfdThreshold) + "\n\n";
-    content+="# CFD fraction\n";
-    content+="CFDFRACTION " + QString::number(detSettings.at(detNumber).cfdFraction) + "\n\n";
-    content+="# CFD group trigger\n";
-    content+="CFDGRPTRIGGER " + QString::number(detSettings.at(detNumber).cfdGroupTrigger) + "\n\n";
-    content+="# Baseline cut\n";
-    content+="BLCUT " + QString::number(detSettings.at(detNumber).baselineCut) + "\n\n";
-    content+="# Integrator\n";
-    content+="INTEGRATOR " + QString::number(detSettings.at(detNumber).integrator) + "\n\n";
-    content+="# Channel gate required (0 = normal, 1 = gate required)\n";
-    content+="GATE " + QString::number(detSettings.at(detNumber).channelGateRequired) + "\n\n";
-    content+="# GFLT polarity (0 = normal, 1 = invert)\n";
-    content+="GFLTPOL "+QString::number(detSettings.at(detNumber).gfltPolarity) + "\n\n";
-    content+="# Gate acceptance polarity (0 = normal, 1 = invert)\n";
-    content+="GATEACCPOL " + QString::number(detSettings.at(detNumber).gateAcceptancePolarity) + "\n\n";
-    content+="# Use GFLT for gate (0 = GFLT for slow validation, 1 = GFLT for fast validation)\n";
-    content+="GATEGFLT " + QString::number(detSettings.at(detNumber).useGfltForGate) + "\n\n";
-    content+="# Gate edge polarity inversion - (0 = normal, 1 = invert)\n";
-    content+="GATEEDGEINV " + QString::number(detSettings.at(detNumber).gateEdgePolarityInversion) + "\n\n";
-    content+="# Gate window\n";
-    content+="GATEWINDOW " + QString::number(detSettings.at(detNumber).gateWindow) + "\n\n";
-    content+="# Gate delay\n";
-    content+="GATEDELAY " + QString::number(detSettings.at(detNumber).gateDelayWindow) + "\n\n";
-    content+="# Disable pile-up rejector flag (0 = do not disable PUR, 1 = disable)\n";
-    content+="DISPUR " + QString::number(detSettings.at(detNumber).disablePileUpRejector) + "\n\n";
-    content+="# Invert pile-up rejector flag (0 = normal, 1 = accept ONLY pile-up events)\n";
-    content+="INVPUR " + QString::number(detSettings.at(detNumber).invertPileUpRejector) + "\n\n";
-    content+="# Pause pile-up rejector (0 = normal, 1 = do not reject events within 400 ns - use this if you have ringing).\n";
-    content+="PAUSEPUR " + QString::number(detSettings.at(detNumber).pausePileUprejector) + "\n\n";
-    content+="# Disable Out-of-range suppression (0 = suppress, 1 = do not suppress)\n";
-    content+="DISOOR " + QString::number(detSettings.at(detNumber).disableOutOfRangeSuppression) + "\n\n";
-    content+="# Estimage energy if below threshold\n";
-    content+="EST_ENERGY " + QString::number(detSettings.at(detNumber).estimateEnergy) + "\n\n";
-    content+="# Allow negative energies (0 = disallow, 1 = allow)\n";
-    content+="ALLOWNEGEN " + QString::number(detSettings.at(detNumber).allowNegativeEnergies) + "\n\n";
-    content+="# Local time (0 = latch channel time on event trigger, 1 = latch on local trigger)\n";
-    content+="USELOCALTIME " + QString::number(detSettings.at(detNumber).localTime)+ "\n\n";
-
+      content="# DGF setup file " + filePath + "\n\n";
+      content+="# Polarity of signal (1 = pos, 0 = neg)\n";
+      content+="POLARITY "+ QString::number(detSettings.at(detNumber).positivePolarity) + "\n\n";
+      content+="# Tau of preamplifier in us\n";
+      content+="TAU " + QString::number(detSettings.at(detNumber).tau) + " \n\n";
+      content+="# Gain in V/V\n";
+      content+="GAIN "+ QString::number(detSettings.at(detNumber).gain) + "\n\n";
+      content+="# DC offset in Volts\n";
+      content+="OFFSET " + QString::number(detSettings.at(detNumber).offset) + "\n\n";
+      content+="# Length of slow filter in us\n";
+      content+="SLOWLENGTH " + QString::number(detSettings.at(detNumber).slowLength) + "\n\n";
+      content+="# Gap of slow filter in us\n";
+      content+="SLOWGAP " + QString::number(detSettings.at(detNumber).slowGap) + "\n\n";
+      content+="# Baseline averaging 2^x\n";
+      content+="MCABASEAV "+ QString::number(detSettings.at(detNumber).baselineAveraging) + "\n\n";
+      content+="# Length of fast filter in ticks\n";
+      content+"FASTLENGTH " + QString::number(detSettings.at(detNumber).fastLength) + "\n\n";
+      content+="# Gap of fast filter in ticks\n";
+      content+="FASTGAP " + QString::number(detSettings.at(detNumber).fastGap) + "\n\n";
+      content+="# Threshold in ADC values\n";
+      content+="THRESHOLD " + QString::number(detSettings.at(detNumber).threshold) + "\n\n";
+      content+="# Tracelength in ticks\n";
+      content+="TRACELENGTH " + QString::number(detSettings.at(detNumber).traceLength) + "\n\n";
+      content+="# Pulse shape analysis length in ticks\n";
+      content+="PSALENGTH " + QString::number(detSettings.at(detNumber).psaLength) + "\n\n";
+      content+="# User delay\n";
+      content+="USERDELAY " + QString::number(detSettings.at(detNumber).userDelay) + "\n\n";
+      content+="# Pulse shape analysis offset in ticks\n";
+      content+="PSAOFFSET " + QString::number(detSettings.at(detNumber).psaOffset) + "\n\n";
+      content+="# MCA bining 2^x\n";
+      content+="MCAENBIN " + QString::number(detSettings.at(detNumber).mcaBining) + "\n\n";
+      content+="# MCA threshold\n";
+      content+="MCACFDTHR " + QString::number(detSettings.at(detNumber).mcaThreshold) + "\n\n";
+      content+="# CFD trigger delay\n";
+      content+="CFDTRIGGERDELAY " + QString::number(detSettings.at(detNumber).cfdTriggerDelay) + "\n\n";
+      content+="# CFD delay\n";
+      content+="CFDDELAY " + QString::number(detSettings.at(detNumber).cfdDelay) + "\n\n";
+      content+="# CFD threshold\n";
+      content+="CFDTHRESHOLD " + QString::number(detSettings.at(detNumber).cfdThreshold) + "\n\n";
+      content+="# CFD fraction\n";
+      content+="CFDFRACTION " + QString::number(detSettings.at(detNumber).cfdFraction) + "\n\n";
+      content+="# CFD group trigger\n";
+      content+="CFDGRPTRIGGER " + QString::number(detSettings.at(detNumber).cfdGroupTrigger) + "\n\n";
+      content+="# Baseline cut\n";
+      content+="BLCUT " + QString::number(detSettings.at(detNumber).baselineCut) + "\n\n";
+      content+="# Integrator\n";
+      content+="INTEGRATOR " + QString::number(detSettings.at(detNumber).integrator) + "\n\n";
+      content+="# Channel gate required (0 = normal, 1 = gate required)\n";
+      content+="GATE " + QString::number(detSettings.at(detNumber).channelGateRequired) + "\n\n";
+      content+="# GFLT polarity (0 = normal, 1 = invert)\n";
+      content+="GFLTPOL "+QString::number(detSettings.at(detNumber).gfltPolarity) + "\n\n";
+      content+="# Gate acceptance polarity (0 = normal, 1 = invert)\n";
+      content+="GATEACCPOL " + QString::number(detSettings.at(detNumber).gateAcceptancePolarity) + "\n\n";
+      content+="# Use GFLT for gate (0 = GFLT for slow validation, 1 = GFLT for fast validation)\n";
+      content+="GATEGFLT " + QString::number(detSettings.at(detNumber).useGfltForGate) + "\n\n";
+      content+="# Gate edge polarity inversion - (0 = normal, 1 = invert)\n";
+      content+="GATEEDGEINV " + QString::number(detSettings.at(detNumber).gateEdgePolarityInversion) + "\n\n";
+      content+="# Gate window\n";
+      content+="GATEWINDOW " + QString::number(detSettings.at(detNumber).gateWindow) + "\n\n";
+      content+="# Gate delay\n";
+      content+="GATEDELAY " + QString::number(detSettings.at(detNumber).gateDelayWindow) + "\n\n";
+      content+="# Disable pile-up rejector flag (0 = do not disable PUR, 1 = disable)\n";
+      content+="DISPUR " + QString::number(detSettings.at(detNumber).disablePileUpRejector) + "\n\n";
+      content+="# Invert pile-up rejector flag (0 = normal, 1 = accept ONLY pile-up events)\n";
+      content+="INVPUR " + QString::number(detSettings.at(detNumber).invertPileUpRejector) + "\n\n";
+      content+="# Pause pile-up rejector (0 = normal, 1 = do not reject events within 400 ns - use this if you have ringing).\n";
+      content+="PAUSEPUR " + QString::number(detSettings.at(detNumber).pausePileUprejector) + "\n\n";
+      content+="# Disable Out-of-range suppression (0 = suppress, 1 = do not suppress)\n";
+      content+="DISOOR " + QString::number(detSettings.at(detNumber).disableOutOfRangeSuppression) + "\n\n";
+      content+="# Estimage energy if below threshold\n";
+      content+="EST_ENERGY " + QString::number(detSettings.at(detNumber).estimateEnergy) + "\n\n";
+      content+="# Allow negative energies (0 = disallow, 1 = allow)\n";
+      content+="ALLOWNEGEN " + QString::number(detSettings.at(detNumber).allowNegativeEnergies) + "\n\n";
+      content+="# Local time (0 = latch channel time on event trigger, 1 = latch on local trigger)\n";
+      content+="USELOCALTIME " + QString::number(detSettings.at(detNumber).localTime)+ "\n\n";
+    }
+    else{
+      qDebug() << "ERROR: detSettings.at(detNumber) does not exist! detNumber="<<detNumber<<" (dgfConfig::writeSetting())";
+    }
     QFile outputFile(filePath);
 
     if(!outputFile.open(QIODevice::WriteOnly)){
@@ -353,6 +368,7 @@ void dgfConfig::writeSetting(QString detName, int detNumber){
 
 void dgfConfig::displaySetting(int detNumber){
 
+  if(detSettings.size()>detNumber){
     ui->baselineAveraging->setValue(detSettings.at(detNumber).baselineAveraging);
     ui->baselineCut->setValue(detSettings.at(detNumber).baselineCut);
     ui->channelGateRequired->setCurrentIndex(detSettings.at(detNumber).channelGateRequired);
@@ -373,13 +389,19 @@ void dgfConfig::displaySetting(int detNumber){
     ui->threshold->setValue(detSettings.at(detNumber).threshold);
     ui->useGfltForGate->setCurrentIndex(detSettings.at(detNumber).useGfltForGate);
     ui->disablePileUpRejector->setCurrentIndex(detSettings.at(detNumber).disablePileUpRejector);
+  }
+  else{
+    qDebug() << "ERROR: detSettings.at(detNumber) does not exist! detNumber="<<detNumber<<" (dgfConfig::displaySetting)";
+  }
 }
 
 void dgfConfig::somethingChanged(int value){
     QObject *s=sender();
     QString sendername;
 
-    if(s){
+    if(detSettings.size()>ui->listView->currentIndex().row()){
+    
+      if(s){
         sendername=s->objectName();
 
         //qDebug() << "Sendername: " << sendername;
@@ -424,9 +446,12 @@ void dgfConfig::somethingChanged(int value){
             ui->saveButton->setEnabled(1);
             ui->saveAllButton->setEnabled(1);
         }
-
-
+      }
     }
+    else{
+      qDebug() << "ERROR: detSettings.at(ui->listView->currentIndex().row()) does not exist! ui->listView->currentIndex().row()="<<ui->listView->currentIndex().row()<<" (dgfConfig::somethingChanged())";
+    }
+    
 
 }
 
@@ -434,7 +459,8 @@ void dgfConfig::somethingChanged(double value){
     QObject *s=sender();
     QString sendername;
 
-    if(s){
+    if(detSettings.size()>ui->listView->currentIndex().row()){
+      if(s){
         sendername=s->objectName();
 
         //qDebug() << "Sendername: " << sendername;
@@ -458,6 +484,10 @@ void dgfConfig::somethingChanged(double value){
             ui->saveButton->setEnabled(1);
             ui->saveAllButton->setEnabled(1);
         }
+      }
+    }
+    else{
+      qDebug() << "ERROR: detSettings.at(ui->listView->currentIndex().row()) does not exist! ui->listView->currentIndex().row()="<<ui->listView->currentIndex().row()<<" (dgfConfig::somethingChanged())";
     }
 }
 

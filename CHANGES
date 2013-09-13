@@ -1,8 +1,22 @@
+************************
 Patch xs0.3.3 to xs0.3.4
 ************************
-	- some minor changes
-	
-	
+
+General:
+	- fixed crash bug by applying security changes to all <vectors> (Problem: ratestime.size() still exists but won't lead to crashes now)
+	- new dgfConfig-widget
+	- new function to visualize the last two subruns of a detector
+	- implemented button for the scope program ... still not functional
+	- getRates() will now be called every 5000 seconds
+	- after the ratestime.size() becomes greater than 1000, xiaStarter will start to store the rates in a file <RunNumber>.rates in the specific rates folder
+	- after once the xiaStarter has been started it will create a file witin the home directory ".xs" - this is just a temporary file which will be deleted by closing the xiaStarter
+	- "xiaStarter -fs" will start xiaStarter with "force start", i.e. it will ignore the ".xs" file
+	- starting xiaStarter normally it will show a MessageBox if there is still a ".xs"-file in the home directory
+
+"Listmode View"-tab:
+	- new button "view last two subruns" is functional now and will show a Messagebox where the user can choose which detector he/she wants to see
+
+************************
 Patch xs0.3.2 to xs0.3.3
 ************************
 
@@ -31,7 +45,7 @@ General:
 plus some minor changes ...
 
 
-
+************************
 Patch xs0.3.1 to xs0.3.2
 ************************
 
@@ -60,7 +74,7 @@ General:
 	- added a fixed time mca countdown in the mcaTimeBox
 
 
-
+**********************
 Patch xs0.3 to xs0.3.1
 **********************
 

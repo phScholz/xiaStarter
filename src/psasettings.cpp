@@ -46,13 +46,18 @@ void psaSettings::setInput(QVector<int> input){
             values.push_back(input.at(i));
         }
         //0:psa length; 1:user delay; 2:psa offset; 3: trace length
-        ui->psaLength->setValue(values.at(0));
-        ui->userDelay->setValue(values.at(1));
-        ui->psaOffset->setValue(values.at(2));
-        ui->traceLength->setValue(values.at(3));
+	if(values.size()>3){
+	  ui->psaLength->setValue(values.at(0));
+	  ui->userDelay->setValue(values.at(1));
+	  ui->psaOffset->setValue(values.at(2));
+	  ui->traceLength->setValue(values.at(3));
+	}
+	else{
+	  qDebug() << "ERROR: vector values is too small! (psaSettings::setInput())";
+	}
     }
     else{
-        qDebug() << "(psaSettings) ERROR: Too less input values!";
+        qDebug() << "ERROR: Too less input values! (psaSettings::setInput())";
     }
 }
 

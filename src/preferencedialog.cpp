@@ -211,11 +211,16 @@ void preferencedialog::setupDetTable(){
         calList.replace(i, detectors.at(i).getCalFilePath());
 
         for(int j=0; j<calNames.size(); j++){
+	  if(detectors.size()>i){
             if(calNames.at(j)==detectors.at(i).getCalFilePath()){
                 if((int)detectors.size()<=calNum.size()){
                     calNum.replace(i,j+1);
                 }
             }
+	  }
+	  else{
+	    qDebug() << "ERROR: detectors.at(i) does not exist! i="<<i<<" (preferencedialog::setupDetTable())";
+	  }
         }
     }
 
@@ -281,7 +286,12 @@ void preferencedialog::calStringChanged(QString calString){
             if(calString==compare){
                 calNum.replace(row,j);
                 calList.replace(row, calNames.at(j));
-                detectors.at(row).setCalFilePath(calNames.at(j));
+		if(detectors.size()>row){
+		  detectors.at(row).setCalFilePath(calNames.at(j));
+		}
+		else{
+		  qDebug() << "ERROR: detectors.at(row) does not exist! row="<<row<<" (preferencedialog::calStringChanged())";
+		}
             }
         }
     }
@@ -307,7 +317,12 @@ void preferencedialog::detTypeChanged(QString detType){
 			break;
 	}
 
-        detectors.at(row).setDetType(detType);
+	if(detectors.size()>row){
+	  detectors.at(row).setDetType(detType);
+	}
+	else{
+	  qDebug() << "ERROR: detectors.at(row) does not exist! row="<< row << " (preferencedialog::detTypeChanged())";
+	}
     }
 
     emit detsChanged(detectors);
@@ -328,7 +343,12 @@ void preferencedialog::ratesLimitChanged(QString ratesLimit){
                 row=sendername.right(2).toInt();
                 break;
         }
-        detectors.at(row).setRatesLimit(ratesLimit);
+	if(detectors.size()>row){
+	  detectors.at(row).setRatesLimit(ratesLimit);
+	}
+	else{
+	  qDebug() << "ERROR: detectors.at(row) does not exist! row="<< row << " (preferencedialog::ratesLimitChanged())";
+	}
 
     }
     emit detsChanged(detectors);

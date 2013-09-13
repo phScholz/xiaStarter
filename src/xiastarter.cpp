@@ -55,7 +55,13 @@ XiaStarter::XiaStarter(QObject *parent) :
     }
 
     for(unsigned int i=0; i<det.size(); i++){
-        detnames.push_back(det.at(i).getName());
+        if(i<det.size()){
+            detnames.push_back(det.at(i).getName());
+        }
+        else{
+            qDebug() << "ERROR: det.at(i) does not exist! i="<< i <<" (XiaStarter::XiaStarter())";
+            continue;
+        }
     }
 
 	//There is no running run
@@ -111,8 +117,14 @@ void XiaStarter::readSourceConf(){
             QStringList values[lines.size()]; //Array of QStringlists of size of the number of lines
 
             for(int i=0; i<lines.size()-1; i++){
-                if(lines.at(i).size()>0){
-                values[i] = lines.at(i).split(QRegExp( "[ \\t]+"), QString::SkipEmptyParts);
+                if(i<lines.size()){
+                    if(lines.at(i).size()>0){
+                        values[i] = lines.at(i).split(QRegExp( "[ \\t]+"), QString::SkipEmptyParts);
+                    }
+                }
+                else{
+                    qDebug() << "ERROR: lines.at(i) does not exist! i="<< i <<" (XiaStarter::readSourceConf())";
+                    continue;
                 }
             }
 
@@ -120,15 +132,22 @@ void XiaStarter::readSourceConf(){
                 xs_det dummy;
 
                 if(!values[i].size()) continue;
-                dummy.setType(values[i].at(0));
-                dummy.setName(values[i].at(1));
-                dummy.setDgfmodule(values[i].at(2));
-                dummy.setCrate(values[i].at(3));
-                dummy.setSlot(values[i].at(4));
-                dummy.setIslot(values[i].at(4).toInt());
-                dummy.setAddress(values[i].at(5));
 
-                det.push_back(dummy);
+                if(values[i].size()>=6){
+                    dummy.setType(values[i].at(0));
+                    dummy.setName(values[i].at(1));
+                    dummy.setDgfmodule(values[i].at(2));
+                    dummy.setCrate(values[i].at(3));
+                    dummy.setSlot(values[i].at(4));
+                    dummy.setIslot(values[i].at(4).toInt());
+                    dummy.setAddress(values[i].at(5));
+                }
+                else{
+                    qDebug() << "ERROR: values[i].at(5) does not exist! i="<< i <<" (XiaStarter::readSourceConf())";
+                    continue;
+                }
+
+                    det.push_back(dummy);
             }
 
         }
@@ -143,6 +162,7 @@ void XiaStarter::readSourceConf(){
         emit textOutput("ERROR:Could not read source.conf!");
         qDebug() << "ERROR: Could not read source.conf!";
     }
+
     size=det.size();
 }
 /*------------------------------------writeSourceConf()-------------------------------------*/
@@ -848,14 +868,15 @@ void XiaStarter::copyDGFsetups(){
     QProcess copy;
     QString script="cp ";
 
-    qDebug() << "Ist hier der Fehler?";
-    for(int i=0; i<detnames.size(); i++){
+    for(unsigned int i=0; i<detnames.size(); i++){
         script+=setupDir+"dgf_config_"+detnames.at(i)+".setup ";
     }
-    qDebug() << "nein";
 
     script+= targetDir;
+
+#ifdef debug
     qDebug() << script;
+#endif
 
     copy.startDetached(script);
     emit textOutput("Copying dgf_configs...");
@@ -1142,167 +1163,216 @@ void XiaStarter::mca_saveSpectra(QString directory){
 /*-------------------------------getRates()------------------------------*/
 void XiaStarter::getRates(){
     if(!runStopped || collector->state()==QProcess::Running){
-    QString path=hwHistDir+"statistics_0.txt";
-    QFile statfile(path);
-    QString line;
-    QString name, current;
-    QStringList names, currents;
+        QString path=hwHistDir+"statistics_0.txt";
+        QFile statfile(path);
+        QString line;
+        QString name, current;
+        QStringList names, currents;
 
 
-    if(statfile.open(QIODevice::ReadOnly)){
+        if(statfile.open(QIODevice::ReadOnly)){
 
-        QTextStream in(&statfile);
+            QTextStream in(&statfile);
 
-        while(!in.atEnd()){
+            while(!in.atEnd()){
 
-            line=in.readLine().append("\n");
+                line=in.readLine().append("\n");
 
-            if(line.contains("Name:")){
-                name.append(line);
-            }
+                if(line.contains("Name:")){
+                    name.append(line);
+                }
 
-            if(line.contains("Current rate:")){
-                current.append(line);
-            }
-        }
-    }
-
-    statfile.close();
-    names = name.split("\n");
-    currents = current.split("\n");
-
-    std::vector<QStringList> lname;
-    std::vector<QStringList> lcurrent;
-
-    for(int i=0; i<names.size()-1; i++){
-
-#ifdef debugrates
-        qDebug() << names.at(i) << endl;
-#endif
-        lname.push_back(names.at(i).split(QRegExp( "[ \\t]+"), QString::SkipEmptyParts));
-    }
-
-    for(int i=0; i<currents.size()-1; i++){
-
-#ifdef debugrates
-        qDebug() << currents.at(i) << endl;
-#endif
-        lcurrent.push_back(currents.at(i).split(QRegExp( "[ \\t]+"), QString::SkipEmptyParts));
-    }
-
-#ifdef debugrates
-    qDebug()<<"lname:"<<endl;
-    for(unsigned int i =0; i<lname.size(); i++)
-        for(unsigned int n=0; n<lname.at(i).size(); n++){
-            qDebug() << lname.at(i).at(n) << endl;
-        }
-
-    qDebug()<< "\n" << "lcurrent:"<<endl;
-    for(unsigned int i =0; i<lcurrent.size(); i++)
-        for(unsigned int n=0; n<lcurrent.at(i).size(); n++){
-            qDebug() << lcurrent.at(i).at(n) << endl;
-        }
-#endif
-
-
-    for(unsigned int i=0; i<det.size(); i++){
-        //qDebug() << i << det.at(i).getName();
-    }
-
-    for(unsigned int i=0; i<det.size(); i++){
-        for(unsigned int j=0; j < lname.size(); j++)
-            for(int k=0; k < lname.at(j).size();k++){
-                if(lname.at(j).at(k) == det.at(i).getName()){
-                    int a=det.at(i).getIaddress();
-                    //qDebug() << i << j << k << a;
-                    double rate;
-                    rate=lcurrent.at(j).at(a+2).toDouble();
-                    rates.at(i).append(rate);
+                if(line.contains("Current rate:")){
+                    current.append(line);
                 }
             }
-    }
-
-    double zeit=(double) t.elapsed()/1000;
-    ratestime.push_back(zeit);
-
-    int datasize=ratestime.size();
-	QString content;
-
-    if(datasize>1000){
-        content=QString::number(ratestime.at(0))+"\t";
-        ratestime.pop_front();
-        for(unsigned int i=0; i< rates.size(); i++){
-            content+=QString::number(rates.at(i).at(0))+"\t";
-            rates.at(i).pop_front();
         }
-        content+="\n";
-        QFile output(ratesFile);
-		if(output.exists()){
-	        output.open(QIODevice::Append);
-		}
-		else{
-	        output.open(QIODevice::WriteOnly);
-		}
-        output.write(content.toAscii());
-        output.close();
-    }
 
-    ratetimer = new QTimer(this);
-    ratetimer->singleShot(1000, this, SLOT(getRates()));
-    emit ratesDataChanged();
-    QString runNum;
-    runNum.setNum(runnum);
-    QString subRunNum;
-    subRunNum.setNum(subrunnum);
-    emit newInfo(filename, runNum, subRunNum);
-    }
+        statfile.close();
+        names = name.split("\n");
+        currents = current.split("\n");
+
+        std::vector<QStringList> lname;
+        std::vector<QStringList> lcurrent;
+
+        for(int i=0; i<names.size()-1; i++){
+
+            #ifdef debugrates
+                qDebug() << names.at(i) << endl;
+            #endif
+            lname.push_back(names.at(i).split(QRegExp( "[ \\t]+"), QString::SkipEmptyParts));
+        }
+
+        for(int i=0; i<currents.size()-1; i++){
+            #ifdef debugrates
+                qDebug() << currents.at(i) << endl;
+            #endif
+            lcurrent.push_back(currents.at(i).split(QRegExp( "[ \\t]+"), QString::SkipEmptyParts));
+        }
+
+        #ifdef debugrates
+            qDebug()<<"lname:"<<endl;
+            for(unsigned int i =0; i<lname.size(); i++){
+                for(unsigned int n=0; n<lname.at(i).size(); n++){
+                    qDebug() << lname.at(i).at(n) << endl;
+                }
+            }
+
+            qDebug()<< "\n" << "lcurrent:"<<endl;
+            for(unsigned int i =0; i<lcurrent.size(); i++){
+                for(unsigned int n=0; n<lcurrent.at(i).size(); n++){
+                    qDebug() << lcurrent.at(i).at(n) << endl;
+                }
+            }
+
+            for(unsigned int i=0; i<det.size(); i++){
+                qDebug() << i << det.at(i).getName();
+            }
+        #endif
+
+        for(unsigned int i=0; i<det.size(); i++){
+            for(unsigned int j=0; j < lname.size(); j++){
+                for(int k=0; k < lname.at(j).size(); k++){
+
+                    if(lname.at(j).at(k) == det.at(i).getName()){
+
+                        int a=det.at(i).getIaddress();
+                        #ifdef debugrates
+                            qDebug() << i << j << k << a;
+                        #endif
+                        double rate;
+
+                        if(lcurrent.size()>j){
+                            if(lcurrent.at(j).size()>a+2){
+                                rate=lcurrent.at(j).at(a+2).toDouble();
+                            }
+                            else{
+                                qDebug() << "ERROR: lcurrent.at("<< j <<").at(a+2) does not exist! a+2="<< a+2 <<" (XiaStarter::getRates())";
+                                continue;
+                            }
+                        }
+                        else{
+                            qDebug() << "ERROR: lcurrent.at(j) does not exist! j="<< j <<" (XiaStarter::getRates())";
+                            continue;
+                        }
+
+                        if(rates.size()>i){
+                            rates.at(i).append(rate);
+                        }
+                        else{
+                            qDebug() << "ERROR: rates.at(i) does not exist! i="<< j <<" (XiaStarter::getRates())";
+                            continue;
+                        }
+                    }
+                }
+            }
+        }
+
+        double zeit=(double) t.elapsed()/1000;
+        ratestime.push_back(zeit);
+        int datasize=ratestime.size();
+        QString content;
+
+        if(datasize>1000){
+            if(ratestime.size()>=1){
+                content=QString::number(ratestime.at(0))+"\t";
+                ratestime.pop_front();
+            }
+            else{
+                qDebug() << "ERROR: ratestime.at(0) does not exist! (XiaStarter::getRates())";
+            }
+
+            for(unsigned int i=0; i< rates.size(); i++){
+                if(rates.at(i).size()>=1){
+                    content+=QString::number(rates.at(i).at(0))+"\t";
+                    rates.at(i).pop_front();
+                }
+                else{
+                    qDebug() << "ERROR: rates.at("<<i<<").at(0) does not exist! (XiaStarter::getRates())";
+                    continue;
+                }
+            }
+
+            content+="\n";
+
+            QFile output(ratesFile);
+
+            if(output.exists()){
+                output.open(QIODevice::Append);
+            }
+            else{
+                output.open(QIODevice::WriteOnly);
+            }
+            output.write(content.toAscii());
+            output.close();
+        }
+
+        ratetimer = new QTimer(this);
+        ratetimer->singleShot(5000, this, SLOT(getRates()));
+        emit ratesDataChanged();
+        QString runNum=QString::number(runnum);
+        QString subRunNum=QString::number(subrunnum);
+
+        emit newInfo(filename, runNum, subRunNum);
+   }
 
 }
 
 void XiaStarter::getFileSize(){
+
     QFile listmode(filename);
-    listmode.open(QIODevice::ReadOnly);
-    qint64 filesize=listmode.size();
-    emit newFileSize(filesize);
-    listmode.close();
-    if(!runStopped){
-        sizetimer->singleShot(1000, this, SLOT(getFileSize()));
+    if(listmode.exists()){
+        listmode.open(QIODevice::ReadOnly);
+        qint64 filesize=listmode.size();
+        emit newFileSize(filesize);
+        listmode.close();
+        if(!runStopped){
+            sizetimer->singleShot(1000, this, SLOT(getFileSize()));
+        }
+    }
+    else{
+        qDebug() << "ERROR: Listmode-flie does not exist. Could not get file size! (XiaStarter::getFileSize())";
     }
 }
 
 void XiaStarter::lmViewAll(){
+
     if(subrunnum>1){
-    QString mcaSpectrum, prog, sSubrun1;
-    QProcess *viewall = new QProcess(this);
-    sSubrun1.setNum(subrunnum-1);
-    prog="tv -e \"";
+        QString mcaSpectrum, prog="tv -e \"", sSubrun1=QString::number(subrunnum-1);
+        QProcess *viewall = new QProcess(this);
 
-    if(subrunnum-1 <10){
-        sSubrun1.prepend("000");
-    }
-    if(subrunnum-1 <100 && subrunnum-1>=10){
-        sSubrun1.prepend("00");
-    }
-    if(subrunnum-1 <1000 && subrunnum-1>=100){
-        sSubrun1.prepend("0");
-    }
-
-	int j=0;
-
-    for(unsigned int i=0; i<det.size(); i++){
-        if((showDets==0) || (showDets==1 && det.at(i).getDetType()=="Germanium") || (showDets==2 && det.at(i).getDetType()=="Silicon")){
-            QString num;
-            num.setNum(j);
-            mcaSpectrum =mca_root+"/"+sSubrun1+"/";
-            mcaSpectrum+=det.at(i).getName()+".spc";
-            prog+="s g "+ mcaSpectrum + "; ";
-            prog+="c p r "+ det.at(i).getCalFilePath() + " " + num +"; ";
-			j++;
+        if(subrunnum-1 <10){
+            sSubrun1.prepend("000");
         }
-    }
-    prog+="\"";
-    qDebug() << prog;
-    viewall->startDetached(prog);
+
+        if(subrunnum-1 <100 && subrunnum-1>=10){
+            sSubrun1.prepend("00");
+        }
+
+        if(subrunnum-1 <1000 && subrunnum-1>=100){
+            sSubrun1.prepend("0");
+        }
+
+        int j=0;
+
+        for(unsigned int i=0; i<det.size(); i++){
+            if((showDets==0) || (showDets==1 && det.at(i).getDetType()=="Germanium") || (showDets==2 && det.at(i).getDetType()=="Silicon")){
+                QString num=QString::number(j);
+                mcaSpectrum =mca_root+"/"+sSubrun1+"/";
+                mcaSpectrum+=det.at(i).getName()+".spc";
+                prog+="s g "+ mcaSpectrum + "; ";
+                prog+="c p r "+ det.at(i).getCalFilePath() + " " + num +"; ";
+                j++;
+            }
+        }
+        prog+="\"";
+
+        #ifdef debug
+            qDebug() << "XiaStarter::lmViewAll() script ...";
+            qDebug() << prog;
+        #endif
+
+        viewall->startDetached(prog);
     }
     else{
         QMessageBox msgBox;
@@ -1330,29 +1400,30 @@ void XiaStarter::lmViewLastTwo(){
 
         if(ret == QDialog::Accepted){
 
-            QString mcaSpectrum, prog, sSubrun1, sSubrun2, cmd, num1, num2;
+            QString mcaSpectrum, prog="tv -e \"", sSubrun1=QString::number(subrunnum-1), sSubrun2=QString::number(subrunnum-2), cmd, num1, num2;
             QVector <QString> mcaSpectra;
             QProcess *viewlatest = new QProcess(this);
-            sSubrun1.setNum(subrunnum-1);
-            sSubrun2.setNum(subrunnum-2);
-
-            prog="tv -e \"";
 
             if(subrunnum-1 <10){
                 sSubrun1.prepend("000");
             }
+
             if(subrunnum-1 <100 && subrunnum-1>=10){
                 sSubrun1.prepend("00");
             }
+
             if(subrunnum-1 <1000 && subrunnum-1>=100){
                 sSubrun1.prepend("0");
             }
+
             if(subrunnum-2 <10){
                 sSubrun2.prepend("000");
             }
+
             if(subrunnum-2 <100 && subrunnum-1>=10){
                 sSubrun2.prepend("00");
             }
+
             if(subrunnum-2 <1000 && subrunnum-1>=100){
                 sSubrun2.prepend("0");
             }
@@ -1379,7 +1450,12 @@ void XiaStarter::lmViewLastTwo(){
             }
 
             prog+="\"";
-            qDebug() << prog;
+
+            #ifdef debug
+                qDebug() << "XiaStarter::lmViewLastTwo() script ...";
+                qDebug() << prog;
+            #endif
+
             viewlatest->startDetached(prog);
         }
     }
@@ -1393,34 +1469,37 @@ void XiaStarter::lmViewLastTwo(){
 
 void XiaStarter::lmViewLatest(){
     if(subrunnum>2){
-        QString mcaSpectrum, prog, sSubrun1, sSubrun2, cmd, num1, num2;
+        QString mcaSpectrum, prog="tv -e \"", sSubrun1=QString::number(subrunnum-1), sSubrun2=QString::number(subrunnum-2), cmd, num1, num2;
         QVector <QString> mcaSpectra;
         QProcess *viewlatest = new QProcess(this);
-        sSubrun1.setNum(subrunnum-1);
-        sSubrun2.setNum(subrunnum-2);
-
-        prog="tv -e \"";
 
         if(subrunnum-1 <10){
             sSubrun1.prepend("000");
         }
+
         if(subrunnum-1 <100 && subrunnum-1>=10){
             sSubrun1.prepend("00");
         }
+
         if(subrunnum-1 <1000 && subrunnum-1>=100){
             sSubrun1.prepend("0");
         }
+
         if(subrunnum-2 <10){
             sSubrun2.prepend("000");
         }
+
         if(subrunnum-2 <100 && subrunnum-1>=10){
             sSubrun2.prepend("00");
         }
+
         if(subrunnum-2 <1000 && subrunnum-1>=100){
             sSubrun2.prepend("0");
         }
 
+
         int j=0;
+
         for(unsigned int i=0; i<det.size(); i++){
             if((showDets==0) || (showDets==1 && det.at(i).getDetType()=="Germanium") || (showDets==2 && det.at(i).getDetType()=="Silicon")){
 
@@ -1438,16 +1517,23 @@ void XiaStarter::lmViewLatest(){
                 prog+="spectrum delete "+ num2 + "; ";
                 prog+="c p r "+ det.at(i).getCalFilePath() + " " + num1 +"; ";
 		
-            j++;
+                j++;
             }
         }
 
         prog+="\"";
-        qDebug() << prog;
+
+        #ifdef debug
+            qDebug() << "XiaStarter::lmViewLatest() script ...";
+            qDebug() << prog;
+        #endif
+
         viewlatest->startDetached(prog);
     }
     else{
-        if(subrunnum>1){lmViewAll();}
+        if(subrunnum>1){
+            lmViewAll();
+        }
         else{
             QMessageBox msgBox;
             msgBox.setIcon(QMessageBox::Information);
@@ -1455,7 +1541,6 @@ void XiaStarter::lmViewLatest(){
             msgBox.exec();
         }
     }
-
 }
 
 void XiaStarter::readCalList(){
@@ -1479,17 +1564,14 @@ void XiaStarter::readCalList(){
                 }
             }
             else{
-                    emit textOutput("WARNING: Too less caliration files in list or wrong source configuration!");
-                    qDebug() << "WARNING: Too less caliration files in list or wrong source configuration!";
+                   qDebug() << "WARNING: Too less caliration files in list or wrong source configuration!";
                 }
         }
-        else{
-            emit textOutput("WARNING: Can not open xs.cal. Check calibration file list!");
+        else{            
             qDebug() << "WARNING: Can not open xs.cal. Check calibration file list!" ;
         }
     }
     else{
-        emit textOutput("WARNING: File xs.cal does not exist. Check calibration file list!");
         qDebug() << "WARNING: File xs.cal does not exist. Check calibration file list!";
     }
 }
@@ -1500,11 +1582,12 @@ void XiaStarter::changeDets(std::vector<xs_det> newDets){
     for(unsigned int i=0; i<newDets.size(); i++){
         det.push_back(newDets.at(i));
     }
+
     size=det.size();
 }
 
 void XiaStarter::loadDetSettings(QString settingsFile){
-    qDebug() << "xs->loadDetSettings()";
+    qDebug() << "Loading Detector Settings...";
     QFile file(settingsFile);
 
     if(file.open(QIODevice::ReadOnly)){
@@ -1571,7 +1654,7 @@ void XiaStarter::loadDetSettings(QString settingsFile){
    QFile calFile("./xs.cal");
    QString text="";
 
-   for(int i=0; i<det.size(); i++){
+   for(unsigned int i=0; i<det.size(); i++){
        text+=det.at(i).getCalFilePath() + "\n";
    }
 
@@ -1579,10 +1662,11 @@ void XiaStarter::loadDetSettings(QString settingsFile){
       calFile.write(text.toAscii());
    }
    else{
-       qDebug() << "xs: WARNING: couldn't write to xs.cal!";
+       qDebug() << "WARNING: couldn't write to xs.cal! (XiaStarter::loadDetSettings())";
    }
 
    calFile.close();
+   qDebug() <<"..done!";
 }
 
 int XiaStarter::showRates(){
@@ -1597,9 +1681,7 @@ int XiaStarter::showRates(){
     stdOut = showRates->readAllStandardOutput();
 
     QString text(stdOut);
-    //qDebug() << text;
     emit newShowRates(text);
-
     return status;
 }
 
@@ -1608,6 +1690,6 @@ void XiaStarter::setMCARates(int num){
 }
 
 void XiaStarter::getMCARates(QString text){
-
+    text+="lol";
 }
 

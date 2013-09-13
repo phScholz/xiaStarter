@@ -21,8 +21,10 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     QString home=getenv("HOME");
+
     QString xsFile=home+"/.xs";
     QFile temp(xsFile);
+
     QString check;
 
     if(argc>1){
@@ -31,7 +33,7 @@ int main(int argc, char *argv[])
     }
 
     if(temp.exists() && check!="-fs"){
-        qDebug() << "XiaStarter could not be started!\nThere is still another instance of XiaStarter running.\nPlease stop the running process and then try to restart XiaStarter.";
+        qDebug() << "ERROR: XiaStarter could not be started!\nThere is still another instance of XiaStarter running.\nPlease stop the running process and then try to restart XiaStarter.";
         QMessageBox msgBox;
         msgBox.setText("There is still another instance of XiaStarter running! Please stop the running process and then try to restart XiaStarter.");
         msgBox.setWindowTitle("XiaStarter could not be started!");
