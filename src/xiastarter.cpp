@@ -1356,9 +1356,9 @@ void XiaStarter::getRates(){
         ratesLoop++;
 
         if(ratesLoop>=1000){
-            QString content;
+            QString content="";
             for(unsigned int i=0; i<ratestime.size(); i++){
-                content=QString::number(ratestime.at(i))+"\t";
+                content+=QString::number(ratestime.at(i))+"\t";
                 for(unsigned int j=0; j<rates.size(); j++){
                     if(rates.at(j).size()>i){
                         content+=QString::number(rates.at(j).at(i))+"\t";
@@ -1368,9 +1368,8 @@ void XiaStarter::getRates(){
                         continue;
                     }
                 }
+                content+="\n";
             }
-
-            content+="\n";
 
             QFile output(ratesFile);
 
