@@ -1,5 +1,6 @@
 xiaStarter
 ==========
+(c)2012-2013 by Philipp Scholz (pscholz@ikp.uni-koeln.de)
 
 A program which should control the digital data acquisition using the miniball acquisition code by NIgel Warr and which also provides a grephical user interface (GUI).
 
@@ -13,4 +14,4 @@ DEPENDENCIES:
 The user will have to have the Qt-project framework of version greater than 4.6.2 and lower than 5.0. Also the mfile library should be available on the computer where the program should run. The standard paths should be /usr/include and /usr/lib. If this is not the case, the specific line should be edited within the XiaStarter.pro file.
 
 INSTALL:
- In Order to get the xiaStarter program running one has to use the qmake program of the Qt framework. "qmake XiaStarter.pro" should create a Makefile in the main directory. Afterwards one can simply run "make". 
+In Order to get the xiaStarter program running one has to use the qmake program of the Qt framework. "qmake XiaStarter.pro" should create a Makefile in the main directory. Afterwards one can simply run "make". 
