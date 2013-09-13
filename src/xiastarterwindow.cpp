@@ -1,12 +1,41 @@
-/**********************************************************************
-*                                                                     *
-*                      xiastarterwindow.cpp                           *
-*                                                                     *
-*         This file is part of the XiaStarter-source code             *
-*            by Philipp Scholz pscholz@ikp.uni-koeln.de               *
-*                                                                     *
-*                                                                     *
-***********************************************************************/
+/******************************************************************************
+
+    xiastarterwindow.cpp
+
+    This file is part of xiaStarter.
+
+    xiaStarter is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    xiaStarter is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with xiaStarter.  If not, see <http://www.gnu.org/licenses/>.
+
+    Diese Datei ist Teil von xiaStarter.
+
+    xiaStarter ist Freie Software: Sie können es unter den Bedingungen
+    der GNU General Public License, wie von der Free Software Foundation,
+    Version 3 der Lizenz oder (nach Ihrer Wahl) jeder späteren
+    veröffentlichten Version, weiterverbreiten und/oder modifizieren.
+
+    xiaStarter wird in der Hoffnung, dass es nützlich sein wird, aber
+    OHNE JEDE GEWÄHELEISTUNG, bereitgestellt; sogar ohne die implizite
+    Gewährleistung der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.
+    Siehe die GNU General Public License für weitere Details.
+
+    Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
+    Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
+
+    (C)2013     Philipp Scholz
+                pscholz@ikp.uni-koeln.de
+
+********************************************************************************/
 #include "xiastarterwindow.h"
 #include "ui_xiastarterwindow.h"
 #include "xiastarter.h"
@@ -173,6 +202,8 @@ XiaStarterWindow::XiaStarterWindow(QWidget *parent) :
     connect(xs, SIGNAL(copyingMCAFiles(bool)), ui->killButton, SLOT(setDisabled(bool)));
     connect(xs, SIGNAL(copyingMCAFiles(bool)), ui->stopButton, SLOT(setDisabled(bool)));
     connect(ui->subrunsButton, SIGNAL(clicked()), xs, SLOT(lmViewLastTwo()));
+
+    setWindowTitle("xiaStarter" + version);
 
     writeOutput("XiaStarter has been started!");
 }
@@ -444,7 +475,7 @@ void XiaStarterWindow::on_startButton_clicked()
             xs->createRunFolders();
             xs->copyDGFsetups();
 
-            for(int i=0; i<xs->rates.size(); i++){
+            for(unsigned int i=0; i<xs->rates.size(); i++){
                 xs->rates.at(i).clear();
             }
             xs->ratestime.clear();
@@ -609,10 +640,10 @@ void XiaStarterWindow::plotRates(){
     
     int i=0;
     for(int j=0; j<xs->size; j++){
-        if(xs->det.size()>j){
+        if((int) xs->det.size()>j){
             if((showRatesFor==0) || (showRatesFor==1 && xs->det.at(j).getDetType()=="Germanium") || (showRatesFor==2 && xs->det.at(j).getDetType()=="Silicon")){
                 ui->ratesPlot->addGraph();
-                if(xs->detnames.size()>j){
+                if((int) xs->detnames.size()>j){
                     switch(i){
                     case 0:
                         ui->ratesPlot->graph(0)->setPen(QPen(Qt::red));
@@ -1324,7 +1355,7 @@ void XiaStarterWindow::saveLastSettings(){
 }
 
 void XiaStarterWindow::showInfo(){
-    QMessageBox info(QMessageBox::Information, "XiaStarter Info", "XiaStarter Version 0.3.4\n\nXiaStarter is a Graphical User Interface-Program for the digital data aquisition with the Miniball Acquisition Code by Nigel Warr.\n\n2012-2013 Philipp Scholz");
+    QMessageBox info(QMessageBox::Information, "xiaStarter Info", "xiaStarter " + version + "\n\nxiaStarter is a Graphical User Interface-Program for the digital data aquisition with the Miniball Acquisition Code by Nigel Warr.\n\n2012-2013 Philipp Scholz");
     info.exec();
 }
 

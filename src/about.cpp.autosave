@@ -1,6 +1,6 @@
 /******************************************************************************
 
-    about.h
+    about.cpp
 
     This file is part of xiaStarter.
 
@@ -37,28 +37,48 @@
 
 ********************************************************************************/
 
-#ifndef ABOUT_H
-#define ABOUT_H
+#include "about.h"
+#include "ui_about.h"
+#include <QFile>
+#include <QString>
+#include <QTextStream>
 
-#include <QDialog>
 
-namespace Ui {
-class about;
+
+about::about(QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::about)
+{
+    ui->setupUi(this);
+
+    //ui->aboutBox->
+
+
+
+    //QFile text("./about.txt");
+
+    /*if(text.open(QIODevice::ReadOnly | QIODevice::Text)){
+        QTextStream in(&text);
+                while (!in.atEnd()) {
+                QString line = in.readLine();
+                ui->aboutBox->appendPlainText(line);
+            }
+
+    }
+    else ui->aboutBox->setPlainText("Help could not be found!");*/
+
+    //text.close();
 }
 
-class about : public QDialog
+about::~about()
 {
-    Q_OBJECT
-    
-public:
-    explicit about(QWidget *parent = 0);
-    ~about();
-    
-private slots:
-    void on_closeButton_clicked();
+    delete ui;
+}
 
-private:
-    Ui::about *ui;
-};
 
-#endif // ABOUT_H
+
+
+void about::on_closeButton_clicked()
+{
+    close();
+}

@@ -6,7 +6,7 @@
 
 QT       += core gui
 
-TARGET = xiaStarter
+TARGET = bin/xiaStarter
 TEMPLATE = app
 
 
@@ -51,6 +51,9 @@ contains( SYSTEM, helios ) {
     LIBS+=   -L/usr/lib -lmfile -lm -mcmodel=large -lpthread
 }
 
+OBJECTS_DIR = ./obj
+MOC_DIR     = ./moc
+UI_DIR = ./ui
 
  RESOURCES     = src/xs.qrc \
     src/xs.qrc

@@ -1,6 +1,6 @@
 /******************************************************************************
 
-    about.h
+    sourceconfdialog.cpp
 
     This file is part of xiaStarter.
 
@@ -36,29 +36,60 @@
                 pscholz@ikp.uni-koeln.de
 
 ********************************************************************************/
+#include "sourceconfdialog.h"
+#include "ui_sourceconfdialog.h"
+#include <QFile>
+#include "xiastarterwindow.h"
+#include <QTextStream>
+#include <QMessageBox>
 
-#ifndef ABOUT_H
-#define ABOUT_H
+sourceconfDialog::sourceconfDialog(QWidget *parent) :
+    QDialog(parent),
+        ui(new Ui::sourceconfDialog)
+{
+        ui->setupUi(this);
 
-#include <QDialog>
+        QString configDir(getenv("MB_CONFIG_DIR"));
+        sourceConfPath=configDir+"/source.conf";
 
-namespace Ui {
-class about;
+        //Readin source conf file
+        QFile file(sourceConfPath); // sourceconffile
+
+        if(!file.exists()){
+            ui->sourceconfBox->appendPlainText("File could not be found!");
+        }
+
+        if(!file.open(QIODevice::ReadWrite | QIODevice::Text)){
+            ui->sourceconfBox->appendPlainText("File could not be opened!");
+        }
+
+        QTextStream in(&file);
+                while (!in.atEnd()) {
+                    QString line = in.readLine();
+                ui->sourceconfBox->appendPlainText(line);
+            }
+        file.close();
+
+
 }
 
-class about : public QDialog
+sourceconfDialog::~sourceconfDialog()
 {
-    Q_OBJECT
-    
-public:
-    explicit about(QWidget *parent = 0);
-    ~about();
-    
-private slots:
-    void on_closeButton_clicked();
+    delete ui;
+}
 
-private:
-    Ui::about *ui;
-};
+void sourceconfDialog::on_buttonBox_accepted()
+{
+    QFile file(sourceConfPath);
+    QString umbruch="\n";
+    if(file.open(QIODevice::WriteOnly | QIODevice::Text)){
+        file.write(ui->sourceconfBox->toPlainText().toAscii());
+        file.write(umbruch.toAscii());
+        file.close();
+    }
+    close();
+}
 
-#endif // ABOUT_H
+void sourceconfDialog::on_buttonBox_rejected(){
+        close();
+}
