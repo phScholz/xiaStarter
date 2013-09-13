@@ -60,7 +60,7 @@ XiaStarterWindow::XiaStarterWindow(QWidget *parent) :
 {
     QString home, xsFile;
     home=getenv("HOME");
-    xsFile=home+"/.xs";
+    xsFile=home+"/.xs/.xs";
     QFile file(xsFile);
     file.open(QIODevice::WriteOnly);
     QString content="XiaStarter Temporary File";
@@ -281,14 +281,19 @@ void XiaStarterWindow::changeStatus(const int num){
 }
 
 void XiaStarterWindow::writeOutput(const QString& msg){
+
+        QDate date;
+        date = QDate::currentDate();
         QTime t;
         t.start();
-        QString time="[";
-        time.append(t.toString());
-        time.append("] ");
-        time.append(msg);
-        ui->outputBox->appendPlainText(time);
-        qDebug()<< time << endl;
+        QString output="[";
+        output.append(date.toString());
+        output.append("|");
+        output.append(t.toString());
+        output.append("] ");
+        output.append(msg);
+        ui->outputBox->appendPlainText(output);
+        qDebug()<< output;
 }
 
 void XiaStarterWindow::sourceconf_clicked(){
@@ -298,8 +303,6 @@ void XiaStarterWindow::sourceconf_clicked(){
 }
 
 void XiaStarterWindow::dgfconf_clicked(){
-    //QString program = "mb_dgf_config";
-    //QProcess::execute(program);
 
     QEventLoop dgfLoop;
     dgfConfig dgf;
@@ -310,15 +313,13 @@ void XiaStarterWindow::dgfconf_clicked(){
     dgfLoop.exec();
 }
 
-void XiaStarterWindow::on_bootButton_clicked()
-{
-    //xs->startBootProcedure();
+void XiaStarterWindow::on_bootButton_clicked(){    
 }
 
 void XiaStarterWindow::removeFile(){
     QString home, xsFile;
     home=getenv("HOME");
-    xsFile=home+"/.xs";
+    xsFile=home+"/.xs/.xs";
     QDir temp(home);
     temp.remove(xsFile);
 }
@@ -326,30 +327,29 @@ void XiaStarterWindow::removeFile(){
 void XiaStarterWindow::on_closeButton_clicked()
 {
     if(xs->runStopped){
-	//Open log file and writing the header with the current date
-    QFile file("./xs.log");
-    QDate datum;
-    datum = QDate::currentDate();
-    QString datumstring;
-    datumstring = "\n\n------------- " + datum.toString() + "------------\n";
-        QString log=ui->outputBox->toPlainText();
 
-    if(file.open(QIODevice::Append| QIODevice::Text)){
-        file.write(datumstring.toAscii());
-	file.write(log.toAscii());
-        file.close();
-    }
+        //Open log file and writing the header with the current date
+        QString xsFolder=getenv("HOME");
+        xsFolder+="/.xs/";
+        QFile file(xsFolder+"xs.log");
+        QString log=ui->outputBox->toPlainText();
+        log+="\n";
+
+        if(file.open(QIODevice::Append| QIODevice::Text)){
+            file.write(log.toLatin1());
+            file.close();
+        }
     
-    saveLastSettings();
-    removeFile();
-    close();
-    }
-    else{
-        QMessageBox msgBox;
-        msgBox.setIcon(QMessageBox::Critical);
-        msgBox.setText("Error: There is still a collector/writer running!");
-        msgBox.exec();
-    }
+        saveLastSettings();
+        removeFile();
+        close();
+        }
+        else{
+            QMessageBox msgBox;
+            msgBox.setIcon(QMessageBox::Critical);
+            msgBox.setText("Error: There is still a collector/writer running!");
+            msgBox.exec();
+        }
 }
 
 void XiaStarterWindow::about_clicked(){
@@ -478,9 +478,10 @@ void XiaStarterWindow::on_startButton_clicked()
             for(unsigned int i=0; i<xs->rates.size(); i++){
                 xs->rates.at(i).clear();
             }
-            xs->ratestime.clear();
 
-            //xs->rates.clear();
+            xs->ratestime.clear();
+            xs->ratesLoop=0;
+
 
             if(xs->daqbuffer_clear()){
 
@@ -618,243 +619,247 @@ void XiaStarterWindow::on_mcaReadoutButton_clicked()
 
 void XiaStarterWindow::plotRates(){
 
-    ui->ratesPlot->clearGraphs();
-	ui->ratesPlot->setRangeDrag(Qt::Vertical);
-    ui->ratesPlot->setRangeZoom(Qt::Vertical);
     if(xs->ratestime.size()>2){
-        ui->ratesPlot->xAxis->setRange(xs->ratestime.at(0), xs->ratestime.at(xs->ratestime.size()-1));
-    }
-    else{
-        qDebug() << "ERROR: ratestime.size() is too small to adjust xAxis of ratesPlot! (XiaStarterWindow::plotRates)";
-    }
 
-	ui->ratesPlot->xAxis->setLabel("Time elapsed [s]");
-    ui->ratesPlot->yAxis->setLabel("Current rate [Hz]");
+        ui->ratesPlot->clearGraphs();
+        ui->ratesPlot->setRangeDrag(Qt::Vertical);
+        ui->ratesPlot->setRangeZoom(Qt::Vertical);
 
-	QFont sansFont("Helvetica [Cronyx]", 8);
-	ui->ratesPlot->legend->setFont(sansFont);
-    ui->ratesPlot->legend->setVisible(1);
-    ui->ratesPlot->legend->setPositionStyle(QCPLegend::psTopLeft);
-	ui->ratesPlot->legend->setItemSpacing(0);
-	ui->ratesPlot->legend->setMargin(10,10,0,1);
-    
-    int i=0;
-    for(int j=0; j<xs->size; j++){
-        if((int) xs->det.size()>j){
-            if((showRatesFor==0) || (showRatesFor==1 && xs->det.at(j).getDetType()=="Germanium") || (showRatesFor==2 && xs->det.at(j).getDetType()=="Silicon")){
-                ui->ratesPlot->addGraph();
-                if((int) xs->detnames.size()>j){
-                    switch(i){
-                    case 0:
-                        ui->ratesPlot->graph(0)->setPen(QPen(Qt::red));
-                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                        break;
-                    case 1:
-                        ui->ratesPlot->graph(1)->setPen(QPen(Qt::green));
-                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                        break;
-                    case 2:
-                        ui->ratesPlot->graph(2)->setPen(QPen(Qt::blue));
-                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                        break;
-                    case 3:
-                        ui->ratesPlot->graph(3)->setPen(QPen(Qt::cyan));
-                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                        break;
-                    case 4:
-                        ui->ratesPlot->graph(4)->setPen(QPen(Qt::darkCyan));
-                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                        break;
-                    case 5:
-                        ui->ratesPlot->graph(5)->setPen(QPen(Qt::magenta));
-                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                        break;
-                    case 6:
-                        ui->ratesPlot->graph(6)->setPen(QPen(Qt::darkMagenta));
-                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                        break;
-                    case 7:
-                        ui->ratesPlot->graph(7)->setPen(QPen(Qt::black));
-                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                        break;
-                    case 8:
-                        ui->ratesPlot->graph(8)->setPen(QPen(Qt::darkYellow));
-                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                        break;
-                    case 9:
-                        ui->ratesPlot->graph(9)->setPen(QPen(Qt::gray));
-                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                        break;
-                    case 10:
-                        ui->ratesPlot->graph(10)->setPen(QPen(Qt::darkBlue));
-                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                        break;
-                    case 11:
-                        ui->ratesPlot->graph(11)->setPen(QPen(Qt::darkRed));
-                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                        break;
-                    case 12:
-                        ui->ratesPlot->graph(12)->setPen(QPen(Qt::yellow));
-                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                        break;
-                    case 13:
-                        ui->ratesPlot->graph(13)->setPen(QPen(Qt::darkGreen));
-                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                        break;
-                    case 14:
-                        ui->ratesPlot->graph(14)->setPen(QPen(Qt::darkGray));
-                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                        break;
-                    case 15:
-                        ui->ratesPlot->graph(15)->setPen(QPen(Qt::lightGray));
-                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                        break;
-                    case 16:
-                        ui->ratesPlot->graph(16)->setPen(QPen(Qt::red));
-                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                        break;
-                    case 17:
-                        ui->ratesPlot->graph(17)->setPen(QPen(Qt::red));
-                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                        break;
-                    case 18:
-                        ui->ratesPlot->graph(18)->setPen(QPen(Qt::red));
-                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                        break;
-                    default:
-                        ui->ratesPlot->graph(i)->setPen(QPen(Qt::red));
-                        ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
-                        break;
+        if(xs->ratestime.size()>2){
+            ui->ratesPlot->xAxis->setRange(xs->ratestime.at(0), xs->ratestime.at(xs->ratestime.size()-1));
+        }
+        else{
+            qDebug() << "ERROR: ratestime.size() is too small to adjust xAxis of ratesPlot! (XiaStarterWindow::plotRates)";
+        }
+
+        ui->ratesPlot->xAxis->setLabel("Time elapsed [s]");
+        ui->ratesPlot->yAxis->setLabel("Current rate [Hz]");
+
+        QFont sansFont("Helvetica [Cronyx]", 8);
+        ui->ratesPlot->legend->setFont(sansFont);
+        ui->ratesPlot->legend->setVisible(1);
+        ui->ratesPlot->legend->setPositionStyle(QCPLegend::psTopLeft);
+        ui->ratesPlot->legend->setItemSpacing(0);
+        ui->ratesPlot->legend->setMargin(10,10,0,1);
+
+        int i=0;
+        for(int j=0; j<xs->size; j++){
+            if((int) xs->det.size()>j){
+                if((showRatesFor==0) || (showRatesFor==1 && xs->det.at(j).getDetType()=="Germanium") || (showRatesFor==2 && xs->det.at(j).getDetType()=="Silicon")){
+                    ui->ratesPlot->addGraph();
+                    if((int) xs->detnames.size()>j){
+                        switch(i){
+                        case 0:
+                            ui->ratesPlot->graph(0)->setPen(QPen(Qt::red));
+                            ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                            break;
+                        case 1:
+                            ui->ratesPlot->graph(1)->setPen(QPen(Qt::green));
+                            ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                            break;
+                        case 2:
+                            ui->ratesPlot->graph(2)->setPen(QPen(Qt::blue));
+                            ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                            break;
+                        case 3:
+                            ui->ratesPlot->graph(3)->setPen(QPen(Qt::cyan));
+                            ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                            break;
+                        case 4:
+                            ui->ratesPlot->graph(4)->setPen(QPen(Qt::darkCyan));
+                            ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                            break;
+                        case 5:
+                            ui->ratesPlot->graph(5)->setPen(QPen(Qt::magenta));
+                            ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                            break;
+                        case 6:
+                            ui->ratesPlot->graph(6)->setPen(QPen(Qt::darkMagenta));
+                            ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                            break;
+                        case 7:
+                            ui->ratesPlot->graph(7)->setPen(QPen(Qt::black));
+                            ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                            break;
+                        case 8:
+                            ui->ratesPlot->graph(8)->setPen(QPen(Qt::darkYellow));
+                            ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                            break;
+                        case 9:
+                            ui->ratesPlot->graph(9)->setPen(QPen(Qt::gray));
+                            ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                            break;
+                        case 10:
+                            ui->ratesPlot->graph(10)->setPen(QPen(Qt::darkBlue));
+                            ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                            break;
+                        case 11:
+                            ui->ratesPlot->graph(11)->setPen(QPen(Qt::darkRed));
+                            ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                            break;
+                        case 12:
+                            ui->ratesPlot->graph(12)->setPen(QPen(Qt::yellow));
+                            ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                            break;
+                        case 13:
+                            ui->ratesPlot->graph(13)->setPen(QPen(Qt::darkGreen));
+                            ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                            break;
+                        case 14:
+                            ui->ratesPlot->graph(14)->setPen(QPen(Qt::darkGray));
+                            ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                            break;
+                        case 15:
+                            ui->ratesPlot->graph(15)->setPen(QPen(Qt::lightGray));
+                            ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                            break;
+                        case 16:
+                            ui->ratesPlot->graph(16)->setPen(QPen(Qt::red));
+                            ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                            break;
+                        case 17:
+                            ui->ratesPlot->graph(17)->setPen(QPen(Qt::red));
+                            ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                            break;
+                        case 18:
+                            ui->ratesPlot->graph(18)->setPen(QPen(Qt::red));
+                            ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                            break;
+                        default:
+                            ui->ratesPlot->graph(i)->setPen(QPen(Qt::red));
+                            ui->ratesPlot->graph(i)->setName(xs->detnames.at(j));
+                            break;
+                        }
                     }
-                }
-                else{
-                    qDebug() << "ERROR: detnames.at(j) does not exist! j=" << j << " (XiaStarterWindow::plotRates())";
-                    continue;
-                }
+                    else{
+                        qDebug() << "ERROR: detnames.at(j) does not exist! j=" << j << " (XiaStarterWindow::plotRates())";
+                        continue;
+                    }
 
-                ui->ratesPlot->graph(i)->setData(xs->ratestime, xs->rates.at(j));
-                i++;
+                    ui->ratesPlot->graph(i)->setData(xs->ratestime, xs->rates.at(j));
+                    i++;
+                }
+            }
+            else{
+                qDebug() << "ERROR: det.at(j) does not exist! j=" << j << " (XiaStarterWindow::plotRates())";
             }
         }
-        else{
-            qDebug() << "ERROR: det.at(j) does not exist! j=" << j << " (XiaStarterWindow::plotRates())";
+
+        ui->ratesPlot->rescaleAxes();
+        ui->ratesPlot->legend->reArrange();
+        ui->ratesPlot->replot();
+
+        //scalerPlot
+        ui->scalerPlot->clearPlottables();
+        ui->scalerPlot->clearItems();
+        //blueBars
+        QCPBars *blueBars = new QCPBars(ui->scalerPlot->xAxis, ui->scalerPlot->yAxis);
+        ui->scalerPlot->addPlottable(blueBars);
+        //yellowBars
+        QCPBars *yellowBars = new QCPBars(ui->scalerPlot->xAxis, ui->scalerPlot->yAxis);
+        ui->scalerPlot->addPlottable(yellowBars);
+        //redBars
+        QCPBars *redBars = new QCPBars(ui->scalerPlot->xAxis, ui->scalerPlot->yAxis);
+        ui->scalerPlot->addPlottable(redBars);
+
+        QPen pen;
+        pen.setColor(QColor(255, 131, 0));
+        yellowBars->setPen(pen);
+        yellowBars->setBrush(QColor(255, 131, 0, 50));
+
+        pen.setColor(QColor(255,0,0));
+        redBars->setPen(pen);
+        redBars->setBrush(QColor(255,0,0,50));
+
+
+        QVector<double> ticks;
+        QVector<QString> labels;
+        QVector<double> data_b, data_y, data_r;
+        QVector<QCPItemText *> ratelabels;
+        QString s_rate;
+        double d_rate;
+
+        for(unsigned int i=0; i<xs->rates.size(); i++){
+
+           ticks << i+1;
+
+           if(xs->detnames.size()>i){
+            labels << xs->detnames.at(i);
+           }
+           else{
+               qDebug() << "ERROR: detnames.at(i) does not exist! i="<<i<<" (XiaStarterWindow::plotRates()";
+           }
+
+            d_rate=xs->rates.at(i).at(xs->rates.at(i).size()-1);
+
+            if(xs->det.size()>i){
+
+                if(d_rate < xs->det.at(i).getIratesLimit()*0.67){
+                    data_b.push_back(d_rate);
+                    data_y.push_back(0);
+                    data_r.push_back(0);
+                }
+
+                if(d_rate >= xs->det.at(i).getIratesLimit()*0.67 && d_rate < xs->det.at(i).getIratesLimit()){
+                    data_b.push_back(0);
+                    data_y.push_back(d_rate);
+                    data_r.push_back(0);
+                }
+
+                if(d_rate >= xs->det.at(i).getIratesLimit()){
+                    data_b.push_back(0);
+                    data_y.push_back(0);
+                    data_r.push_back(d_rate);
+                }
+            }
+            else{
+                qDebug() << "ERROR: det.at(i) does not exist! i="<<i<<" (XiaStarterWindow::plotRates)";
+            }
+
+            s_rate.setNum(d_rate);
+
+            QCPItemText *labeldummy = new QCPItemText(ui->scalerPlot);
+            ratelabels.push_back(labeldummy);
+            if(ratelabels.size()>i){
+                ui->scalerPlot->addItem(ratelabels.at(i));
+            }
+            else{
+                qDebug() << "ERROR: ratelabels.at(i) does not exist! i="<<i<<" (XiaStarterWindow::plotRates())";
+            }
+
+            ratelabels.at(i)->setText(s_rate);
+            ratelabels.at(i)->setFont(QFont(font().family(), 7));
+            ratelabels.at(i)->setPositionAlignment(Qt::AlignBottom|Qt::AlignHCenter);
+            ratelabels.at(i)->position->setType(QCPItemPosition::ptPlotCoords);
+            ratelabels.at(i)->position->setAxes(ui->scalerPlot->xAxis, ui->scalerPlot->yAxis);
+            ratelabels.at(i)->position->setCoords(ticks.at(i), xs->rates.at(i).at(xs->rates.at(i).size()-1));
         }
+
+        //configure xAxis
+        ui->scalerPlot->xAxis->setAutoTicks(false);
+        ui->scalerPlot->xAxis->setAutoTickLabels(false);
+        ui->scalerPlot->xAxis->setTickVector(ticks);
+        ui->scalerPlot->xAxis->setTickVectorLabels(labels);
+        ui->scalerPlot->xAxis->setTickLabelRotation(-60);
+        ui->scalerPlot->xAxis->setSubTickCount(0);
+        ui->scalerPlot->xAxis->setTickLength(0, 1);
+        ui->scalerPlot->xAxis->setGrid(false);
+        ui->scalerPlot->xAxis->setRange(0, xs->detnames.size()+1);
+
+        //configure yAxis
+        ui->scalerPlot->yAxis->setScaleType(QCPAxis::stLogarithmic);
+        ui->scalerPlot->yAxis->setScaleLogBase(10);
+        ui->scalerPlot->yAxis->setPadding(2); // a bit more space to the left border
+        ui->scalerPlot->yAxis->setLabel("Detector Rates\n[Hz]");
+        ui->scalerPlot->yAxis->setSubGrid(true);
+        ui->scalerPlot->yAxis->setRangeUpper(100000);
+        ui->scalerPlot->yAxis->setRangeLower(1);
+
+        blueBars->setData(ticks,data_b);
+        yellowBars->setData(ticks,data_y);
+        redBars->setData(ticks,data_r);
+        ui->scalerPlot->replot();
     }
-
-    ui->ratesPlot->rescaleAxes();
-	ui->ratesPlot->legend->reArrange();
-	ui->ratesPlot->replot();
-   
-    //scalerPlot
-    ui->scalerPlot->clearPlottables();
-    ui->scalerPlot->clearItems();
-	//blueBars
-    QCPBars *blueBars = new QCPBars(ui->scalerPlot->xAxis, ui->scalerPlot->yAxis);
-    ui->scalerPlot->addPlottable(blueBars);
-	//yellowBars
-    QCPBars *yellowBars = new QCPBars(ui->scalerPlot->xAxis, ui->scalerPlot->yAxis);
-    ui->scalerPlot->addPlottable(yellowBars);
-	//redBars
-    QCPBars *redBars = new QCPBars(ui->scalerPlot->xAxis, ui->scalerPlot->yAxis);
-    ui->scalerPlot->addPlottable(redBars);
-
-    QPen pen;
-    pen.setColor(QColor(255, 131, 0));
-    yellowBars->setPen(pen);
-	yellowBars->setBrush(QColor(255, 131, 0, 50));
-
-    pen.setColor(QColor(255,0,0));
-    redBars->setPen(pen);
-    redBars->setBrush(QColor(255,0,0,50));
-
-
-	QVector<double> ticks;
-    QVector<QString> labels;
-    QVector<double> data_b, data_y, data_r;
-    QVector<QCPItemText *> ratelabels;
-    QString s_rate;
-    double d_rate;
-
-    for(unsigned int i=0; i<xs->rates.size(); i++){
-
-       ticks << i+1;
-
-       if(xs->detnames.size()>i){
-        labels << xs->detnames.at(i);
-       }
-       else{
-           qDebug() << "ERROR: detnames.at(i) does not exist! i="<<i<<" (XiaStarterWindow::plotRates()";
-       }
-
-        d_rate=xs->rates.at(i).at(xs->rates.at(i).size()-1);
-
-        if(xs->det.size()>i){
-
-            if(d_rate < xs->det.at(i).getIratesLimit()*0.67){
-                data_b.push_back(d_rate);
-                data_y.push_back(0);
-                data_r.push_back(0);
-            }
-    
-            if(d_rate >= xs->det.at(i).getIratesLimit()*0.67 && d_rate < xs->det.at(i).getIratesLimit()){
-                data_b.push_back(0);
-                data_y.push_back(d_rate);
-                data_r.push_back(0);
-            }
-       
-            if(d_rate >= xs->det.at(i).getIratesLimit()){
-                data_b.push_back(0);
-                data_y.push_back(0);
-                data_r.push_back(d_rate);
-            }
-        }
-        else{
-            qDebug() << "ERROR: det.at(i) does not exist! i="<<i<<" (XiaStarterWindow::plotRates)";
-        }
-
-        s_rate.setNum(d_rate);
-
-        QCPItemText *labeldummy = new QCPItemText(ui->scalerPlot);
-        ratelabels.push_back(labeldummy);
-        if(ratelabels.size()>i){
-            ui->scalerPlot->addItem(ratelabels.at(i));
-        }
-        else{
-            qDebug() << "ERROR: ratelabels.at(i) does not exist! i="<<i<<" (XiaStarterWindow::plotRates())";
-        }
-
-        ratelabels.at(i)->setText(s_rate);
-        ratelabels.at(i)->setFont(QFont(font().family(), 7));
-        ratelabels.at(i)->setPositionAlignment(Qt::AlignBottom|Qt::AlignHCenter);
-        ratelabels.at(i)->position->setType(QCPItemPosition::ptPlotCoords);
-        ratelabels.at(i)->position->setAxes(ui->scalerPlot->xAxis, ui->scalerPlot->yAxis);
-        ratelabels.at(i)->position->setCoords(ticks.at(i), xs->rates.at(i).at(xs->rates.at(i).size()-1));
-	}
-
-	//configure xAxis
-	ui->scalerPlot->xAxis->setAutoTicks(false);
-	ui->scalerPlot->xAxis->setAutoTickLabels(false);
-    ui->scalerPlot->xAxis->setTickVector(ticks);
-    ui->scalerPlot->xAxis->setTickVectorLabels(labels);
-    ui->scalerPlot->xAxis->setTickLabelRotation(-60);
-    ui->scalerPlot->xAxis->setSubTickCount(0);
-    ui->scalerPlot->xAxis->setTickLength(0, 1);
-    ui->scalerPlot->xAxis->setGrid(false);
-    ui->scalerPlot->xAxis->setRange(0, xs->detnames.size()+1);
-
-    //configure yAxis
-    ui->scalerPlot->yAxis->setScaleType(QCPAxis::stLogarithmic);
-    ui->scalerPlot->yAxis->setScaleLogBase(10);
-    ui->scalerPlot->yAxis->setPadding(2); // a bit more space to the left border
-    ui->scalerPlot->yAxis->setLabel("Detector Rates\n[Hz]");
-    ui->scalerPlot->yAxis->setSubGrid(true);
-    ui->scalerPlot->yAxis->setRangeUpper(100000);
-    ui->scalerPlot->yAxis->setRangeLower(1);
-
-    blueBars->setData(ticks,data_b);
-    yellowBars->setData(ticks,data_y);
-    redBars->setData(ticks,data_r);
-    ui->scalerPlot->replot();
 }
 
 void XiaStarterWindow::on_pushButton_clicked(){}
@@ -1164,7 +1169,13 @@ void XiaStarterWindow::loadLastSettings(){
 }
 
 void XiaStarterWindow::saveLastSettings(){
-    QFile settings("./last.xss");
+
+    //storing path to xiaStarter folder into xsFolder
+    QString xsFolder=getenv("HOME");
+    xsFolder+="/.xs/";
+
+    //Writing Settings into last.xss
+    QFile settings(xsFolder+"last.xss");
 
     if(settings.open(QIODevice::WriteOnly)){
         QDate date;
@@ -1341,7 +1352,8 @@ void XiaStarterWindow::saveLastSettings(){
         settings.close();
     }
 
-    QFile calFile("./xs.cal");
+    //Storing calibration File list into xs.cal in the xsFolder
+    QFile calFile(xsFolder+"xs.cal");
 
     if(calFile.open(QIODevice::WriteOnly)){
         QString text="";

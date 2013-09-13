@@ -1,4 +1,28 @@
 ************************
+Patch xs0.3.4 to xs0.3.5
+************************
+
+General:
+	- added LICENSE file
+	- added LICENSE and COPYRIGHT note to every file of the source code 
+	- version number is now in the XiaStarterWindow-title
+	- xiaStarter will now create a ".xs"-folder within the home directory
+	- temporary file (.xs) as well as the last settings (last.xss) and the output log (xs.log) and the calibration list file (xs.cal) will now be stored within the xiaStarter folder in the home directory
+	- dgf_show output is now written to qDebug() if "debug" was defined
+	- all scripts will only be written to qDebug() if "debug" was defined
+	- more qDebug() messages are now only visible if "debug" was defined
+	- rates will now be updated every second
+	- rates will now be written into the <Runnumber>.rates-file every 1000 seconds
+	- added Date to the log-output: "[date|time] text" 
+
+"Rates Plot"-tab:
+	- fixed ratestime bug; rates will only be plotted if there are at least three data points
+	- the ratesPlot will now only show the last 1000 seconds of data
+
+"Info"-tab:
+	- version number has been removed
+
+************************
 Patch xs0.3.3 to xs0.3.4
 ************************
 
@@ -7,7 +31,7 @@ General:
 	- new dgfConfig-widget
 	- new function to visualize the last two subruns of a detector
 	- implemented button for the scope program ... still not functional
-	- getRates() will now be called every 5000 seconds
+	- getRates() will now be called every 5 seconds
 	- after the ratestime.size() becomes greater than 1000, xiaStarter will start to store the rates in a file <RunNumber>.rates in the specific rates folder
 	- after once the xiaStarter has been started it will create a file witin the home directory ".xs" - this is just a temporary file which will be deleted by closing the xiaStarter
 	- "xiaStarter -fs" will start xiaStarter with "force start", i.e. it will ignore the ".xs" file

@@ -51,17 +51,35 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     QString home=getenv("HOME");
 
-    QString xsFile=home+"/.xs";
-    QFile temp(xsFile);
-
-    QString check;
-
-    if(argc>1){
-        QString parameter(argv[1]);
-        check=parameter;
+    //Checking if "~/.xs"-folder already exists. If not, it will be created.
+    QDir xsFolder(home+"/.xs");
+    if(!xsFolder.exists()){
+        xsFolder.setPath(home);
+        xsFolder.mkdir(".xs");
+        xsFolder.cd(".xs");
     }
 
-    if(temp.exists() && check!="-fs"){
+    QString xsFile=xsFolder.path()+"/.xs";
+    QFile temp(xsFile);
+
+    bool fs=false;
+    bool h=false;
+
+    if(argc>1){
+        for(int i=0; i<argc; i++){
+            QString parameter(argv[i]);
+
+            if(parameter=="-fs" || parameter=="--force-start") fs=true;
+            if(parameter=="-h" || parameter=="--help") h=true;
+        }
+    }
+
+    if(h){
+        qDebug() << "\n\n USAGE:\txiaStarter <para>\n\n\t -h/--help\tDisplays this.\n\t -fs/--force-start\tIgnores that the \".xs\" file exists. Also if there is another of instance of xiaStarter running, the program will start anyway.";
+        exit(1);
+    }
+
+    if(temp.exists() && !fs){
         qDebug() << "ERROR: XiaStarter could not be started!\nThere is still another instance of XiaStarter running.\nPlease stop the running process and then try to restart XiaStarter.";
         QMessageBox msgBox;
         msgBox.setText("There is still another instance of XiaStarter running! Please stop the running process and then try to restart XiaStarter.");

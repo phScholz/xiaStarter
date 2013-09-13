@@ -62,7 +62,7 @@ class XiaStarterWindow : public QMainWindow
     Q_OBJECT
     
 public:
-    const QString version="0.4";
+    const QString version="0.3.5";
     QPalette green1;
     QPalette green2;
     QPalette yellow1;

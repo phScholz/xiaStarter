@@ -143,7 +143,9 @@ void preferencedialog::on_addButton_clicked()
 }
 
 void preferencedialog::writeCal(){
-    QFile file("./xs.cal");
+    QString xsFolder=getenv("HOME");
+    xsFolder+="/.xs/";
+    QFile file(xsFolder+"xs.cal");
     QString content="";
     for(int i=0; i<calNames.size(); i++){
         content+=calNames.at(i)+"\n";
@@ -158,7 +160,10 @@ void preferencedialog::writeCal(){
 
 
 void preferencedialog::readCal(){
-    QFile file("./xs.cal");
+
+    QString xsFolder=getenv("HOME");
+    xsFolder+="/.xs/";
+    QFile file(xsFolder+"xs.cal");
 
     if(file.exists()){
         if(file.open(QIODevice::ReadOnly)){
@@ -331,7 +336,7 @@ void preferencedialog::calStringChanged(QString calString){
 void preferencedialog::detTypeChanged(QString detType){
     QObject *s=sender();
     QString sendername;
-	int row;
+    int row=0;
 
     if(s && check){
         sendername=s->objectName();
@@ -344,6 +349,9 @@ void preferencedialog::detTypeChanged(QString detType){
 		case 10:
 			row=sendername.right(2).toInt();
 			break;
+        default:
+            qDebug() << "ERROR: Size of sendername is not normal! size=" << sendername.size()<<" (preferenceDialog::detTypeChanged())";
+            break;
 	}
 
 	if(detectors.size()>row){
@@ -360,7 +368,7 @@ void preferencedialog::detTypeChanged(QString detType){
 void preferencedialog::ratesLimitChanged(QString ratesLimit){
     QObject *s=sender();
     QString sendername;
-	int row;
+    int row=0;
 
     if(s && check){
         sendername=s->objectName();
@@ -371,14 +379,16 @@ void preferencedialog::ratesLimitChanged(QString ratesLimit){
             case 10:
                 row=sendername.right(2).toInt();
                 break;
+            default:
+                qDebug() << "ERROR: Size of sendername is not normal! size="<<sendername.size()<<" (preferenceDialog::ratesLimitChanged())";
+                break;
         }
-	if(detectors.size()>row){
-	  detectors.at(row).setRatesLimit(ratesLimit);
-	}
-	else{
-	  qDebug() << "ERROR: detectors.at(row) does not exist! row="<< row << " (preferencedialog::ratesLimitChanged())";
-	}
-
+        if(detectors.size()>row){
+            detectors.at(row).setRatesLimit(ratesLimit);
+        }
+        else{
+            qDebug() << "ERROR: detectors.at(row) does not exist! row="<< row << " (preferencedialog::ratesLimitChanged())";
+        }
     }
     emit detsChanged(detectors);
 }

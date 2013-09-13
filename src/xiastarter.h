@@ -76,7 +76,7 @@ public:
     int mcaCrate;
     int mcaTime;
     int showDets;
-
+    int ratesLoop;
 
     bool runStopped;
 
@@ -221,6 +221,7 @@ private:
     int time;
     int loopint;
     int lRunint;
+
 
     bool udefloop;
 

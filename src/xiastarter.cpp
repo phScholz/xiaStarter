@@ -54,11 +54,8 @@
 
 //If you uncomment the next line, there will be some additional output to the qDebug() Stream
 //#define debug
-//#define debugMOD
 //#define debugNWR
 //#define debugrates
-#define VERSION 0.3.3
-
 
 XiaStarter::XiaStarter(QObject *parent) :
     QObject(parent)
@@ -337,6 +334,7 @@ void XiaStarter::startCollector(){
 
     collector->setReadChannel(QProcess::StandardOutput);
     collector->start(program);
+    t.restart();
     //collector->waitForStarted(1000);
 }
 
@@ -371,6 +369,7 @@ void XiaStarter::collectorStateChanged(QProcess::ProcessState newState){
 
 /*----------------------------startWriter()--------------------------------------*/
 void XiaStarter::startWriter(){
+
 #ifdef debug
     qDebug() << time << endl;
 #endif
@@ -444,85 +443,88 @@ void XiaStarter::copyMODStats(){
     for(int i=0; i<25; i++){
         s[i]=0;
     }
-#ifdef debugMOD
-    qDebug() << "Checking which slots are occupied ..." << endl;
-#endif
+
+    #ifdef debug
+        qDebug() << "Checking which slots are occupied ..." << endl;
+    #endif
+
      for(unsigned int i=0; i<det.size(); i++){
         int j=det.at(i).getIslot();
         if(s[j]!=1){
             s[j]=1;
         }
     }
-#ifdef debugMOD
-    qDebug() << "Starting with Mainloop of copyMODStats() ..." << endl;
-#endif
+
+    #ifdef debug
+        qDebug() << "Starting with Mainloop of copyMODStats() ..." << endl;
+    #endif
 
     emit textOutput("Copy MOD files ...");
 
     for(int i=0; i<25; i++){
         if(s[i]){
             slot=i;
-#ifdef debugMOD
-    qDebug() << "Trying to get dgf_show data ..." << endl;
-#endif
-	    if(collector->state()==QProcess::Running){
-	      dgfshow = new QProcess(this);
-	      QString prog="dgf_show ",sl;
+            #ifdef debug
+                qDebug() << "Trying to get dgf_show data ..." << endl;
+            #endif
+            if(collector->state()==QProcess::Running){
+                dgfshow = new QProcess(this);
+                QString prog="dgf_show ",sl;
+                sl.setNum(slot);
+                prog.append("0:"+sl);
 
-	      sl.setNum(slot);
-	      prog.append("0:"+sl);
-
-
-#ifdef debugMOD
-    qDebug() << "Nein?" << endl;
-#endif
+                #ifdef debug
+                    qDebug() << "Nein?" << endl;
+                #endif
 
 
-#ifdef debugMOD
-    qDebug() << "Trying to read in data..." << endl;
-#endif
+                #ifdef debug
+                    qDebug() << "Trying to read in data..." << endl;
+                #endif
 
-	      dir.setPath(mod_root);
+                dir.setPath(mod_root);
 
-	      QString subrun, folder="", path, pos;
+                QString subrun, folder="", path, pos;
 
-	      subrun.setNum(subrunnum-1);
+                subrun.setNum(subrunnum-1);
 
-	      if(subrunnum-1<10){
-		  folder.append("000");
-	      }
-	      if(subrunnum-1>=10 && subrunnum-1<100){
-		  folder.append("00");
-	      }
-	      if(subrunnum-1>=100 && subrunnum-1<1000){
-		  folder.append("0");
-	      }
+                if(subrunnum-1<10){
+                    folder.append("000");
+                }
 
-	      folder.append(subrun);
-	      dir.mkdir(folder);
-	      dir.cd(folder);
+                if(subrunnum-1>=10 && subrunnum-1<100){
+                    folder.append("00");
+                }
 
-	      path=dir.path();
-	      pos.setNum(slot);
-	      path.append("/mod"+pos+".stat");
+                if(subrunnum-1>=100 && subrunnum-1<1000){
+                    folder.append("0");
+                }
+                folder.append(subrun);
+                dir.mkdir(folder);
+                dir.cd(folder);
 
-	      dgfshow->setStandardOutputFile(path);
-	      emit textOutput(prog + " started!");
-	      dgfshow->start(prog);
-	      if(dgfshow->waitForFinished(-1)){
-		emit textOutput(prog+" successfull finished!");
-	      }
-	      else{
-		emit textOutput(prog+" don't finished ...");
-	      }
+                path=dir.path();
+                pos.setNum(slot);
+                path.append("/mod"+pos+".stat");
+
+                dgfshow->setStandardOutputFile(path);
+                  #ifdef debug
+                        emit textOutput(prog + " started!");
+                  #endif
+                  dgfshow->start(prog);
+                  if(dgfshow->waitForFinished(-1)){
+                      emit textOutput(prog+" successfull finished!");
+                  }
+                  else{
+                      emit textOutput(prog+" don't finished ...");
+                  }
 	    
 
-#ifdef debugMOD
-    qDebug() << "Trying to write MOD_STATS to "<<path << endl;
-#endif
+                  #ifdef debug
+                      qDebug() << "Trying to write MOD_STATS to "<<path << endl;
+                  #endif
+            }
         }
-
-      }
     }
 
     dir.setPath(dirname);
@@ -616,68 +618,97 @@ void XiaStarter::createRunFolders(){
 
         emit textOutput("WARNING: Prefixfolder already exist! The Runnumber has been changed!");
 
-	      test.append("/Run");
-	
-	      QString test2=test;
+        test.append("/Run");
+        QString test2=test;
+        QString test3=test;
 		
 		if(runnum<10){
 			test2+="0"+QString::number(runnum);
+            test3+="0"+QString::number(runnum+1);
 		}
 
 		if(runnum>=10){
 			test2+=QString::number(runnum);
+            test3+=QString::number(runnum+1);
 		}
 
-		if(dir.exists(test)){
-				
-		  bool chkrun=true;
-		  int i=1;
+        if(dir.exists(test2)){
+            if(dir.exists(test3)){
+
+                bool chkrun=true;
+                int i=1;
 		
-		  while(chkrun){
-		  
-		    QString runpath=test;
-		    QString rn;
-		    rn.setNum(i);
+                while(chkrun){
+		  		    QString runpath=test;
+                    QString rn;
+                    rn.setNum(i);
 
-		    if(i<10){
-		      runpath.append("0"+rn);
-		    }
+                    if(i<10){
+                        runpath.append("0"+rn);
+                    }
 
-		    if(i>=10){
-		      runpath.append(rn);
-		    }
+                    if(i>=10){
+                        runpath.append(rn);
+                    }
 
-		    if(dir.exists(runpath)){
-		      i++;
-		    }
-		    else{
-		      chkrun=false;
-		      nummer=i;
-		      emit runNumChange(nummer);
-		      run="Run";
-		      zahl.setNum(nummer);
+                    if(dir.exists(runpath)){
+                        i++;
+                    }
+                    else{
+                        chkrun=false;
+                        nummer=i;
+                        emit runNumChange(nummer);
+                        run="Run";
+                        zahl.setNum(nummer);
 
-		      if(nummer<10){
-			  run.append("0");
-		      }
+                        if(nummer<10){
+                            run.append("0");
+                        }
 
-		      run.append(zahl);
+                        run.append(zahl);
 
-		      dir.setPath(dirname);
-		      dir.cd(prefix);
+                        dir.setPath(dirname);
+                        dir.cd(prefix);
 
-		      if(dir.mkdir(run)){
-#ifdef debug
-        qDebug() << "Runfolder created!" << endl;
-#endif
-		      }
-		      else {
-#ifdef debug
-    qDebug() << "Could not create Runfolder!" << endl;
-#endif
-		      }
-		  }
-		}
+                        if(dir.mkdir(run)){
+                            #ifdef debug
+                                qDebug() << "Runfolder created!" << endl;
+                            #endif
+                        }
+                        else {
+                            #ifdef debug
+                                qDebug() << "Could not create Runfolder!" << endl;
+                            #endif
+                        }
+                    }
+                }
+            }
+            else{
+                nummer=runnum+1;
+                emit runNumChange(nummer);
+                run="Run";
+                zahl.setNum(nummer);
+
+                if(nummer<10){
+                  run.append("0");
+                }
+
+                run.append(zahl);
+
+                dir.setPath(dirname);
+                dir.cd(prefix);
+
+                if(dir.mkdir(run)){
+                  #ifdef debug
+                      qDebug() << "Runfolder created!" << endl;
+                  #endif
+                }
+                else {
+                  #ifdef debug
+                      qDebug() << "Could not create Runfolder!" << endl;
+                  #endif
+                }
+            }
 	    }
 	    else{
 	      nummer=runnum;
@@ -686,7 +717,7 @@ void XiaStarter::createRunFolders(){
 	      zahl.setNum(nummer);
 	      
 	      if(nummer<10){
-		run.append("0");
+            run.append("0");
 	      }
 
 	      run.append(zahl);
@@ -695,114 +726,134 @@ void XiaStarter::createRunFolders(){
 	      dir.cd(prefix);
 	      
 	      if(dir.mkdir(run)){
-#ifdef debug
-        qDebug() << "Runfolder created!" << endl;
-#endif
+            #ifdef debug
+                qDebug() << "Runfolder created!" << endl;
+            #endif
 	      }
 	      else {
-#ifdef debug
-    qDebug() << "Could not create Runfolder!" << endl;
-#endif
+            #ifdef debug
+                qDebug() << "Could not create Runfolder!" << endl;
+            #endif
 	      }
 	    }
+    }
+    else{
+        if(dir.mkdir(prefix)){
+            dir.cd(prefix);
+            if(dir.mkdir(run)){
+                #ifdef debug
+                    qDebug() << "Runfolder created!" << endl;
+                #endif
+            }
+            else {
+                #ifdef debug
+                    qDebug() << "Could not create Runfolder!" << endl;
+                #endif
+            }
         }
         else{
-            if(dir.mkdir(prefix)){
-                dir.cd(prefix);
-                if(dir.mkdir(run)){
-#ifdef debug
-    qDebug() << "Runfolder created!" << endl;
-#endif
-            }
-            else {
-#ifdef debug
-    qDebug() << "Could not create Runfolder!" << endl;
-#endif
-            }
-            }
-            else{
-#ifdef debug
-    qDebug() << "Could not create Runfolder!" << endl;
-#endif
-            }
+            #ifdef debug
+                qDebug() << "Could not create Runfolder!" << endl;
+            #endif
         }
+    }
 
-        dir.cd(run);
+    dir.cd(run);
+    if(dir.mkdir("listmode")){
+        #ifdef debug
+            qDebug() << "Listmode folder created!" << endl;
+        #endif
+    }
+    else {
+        #ifdef debug
+            qDebug() << "Could not create Listmode folder!" << endl;
+        #endif
+    }
 
-        if(dir.mkdir("listmode")){
-#ifdef debug
-    qDebug() << "Listmode folder created!" << endl;
-#endif
-            }
-            else {
-#ifdef debug
-    qDebug() << "Could not create Listmode folder!" << endl;
-#endif
-        }
+    if(dir.mkdir("MCA")){
+        #ifdef debug
+            qDebug() << "MCAfolder created!" << endl;
+        #endif
+    }
+    else {
+        #ifdef debug
+            qDebug() << "Could not create MCAfolder!" << endl;
+        #endif
+    }
 
-        if(dir.mkdir("MCA")){
-#ifdef debug
-    qDebug() << "MCAfolder created!" << endl;
-#endif
-            }
-            else {
-#ifdef debug
-    qDebug() << "Could not create MCAfolder!" << endl;
-#endif
-        }
+    if(dir.mkdir("statistics")){
+        #ifdef debug
+            qDebug() << "Statistics folder created!" << endl;
+        #endif
+    }
+    else{
+        #ifdef debug
+            qDebug() << "Could not create Statistics folder!" << endl;
+        #endif
+    }
 
-        if(dir.mkdir("statistics")){
-#ifdef debug
-    qDebug() << "Statistics folder created!" << endl;
-#endif
-            }
-            else {
-#ifdef debug
-    qDebug() << "Could not create Statistics folder!" << endl;
-#endif
-        }
+    if(dir.mkdir("mod_statistics")){
+        #ifdef debug
+            qDebug() << "MOD folder created!" << endl;
+        #endif
+    }
+    else {
+        #ifdef debug
+            qDebug() << "Could not create MOD folder!" << endl;
+        #endif
+    }
 
-        if(dir.mkdir("mod_statistics")){
-#ifdef debug
-    qDebug() << "MOD folder created!" << endl;
-#endif
-            }
-            else {
-#ifdef debug
-    qDebug() << "Could not create MOD folder!" << endl;
-#endif
-        }
+    if(dir.mkdir("dgf_setups")){
+        #ifdef debug
+            qDebug() << "MOD folder created!" << endl;
+        #endif
+    }
+    else {
+        #ifdef debug
+            qDebug() << "Could not create MOD folder!" << endl;
+        #endif
+    }
 
-        if(dir.mkdir("dgf_setups")){
-#ifdef debug
-    qDebug() << "MOD folder created!" << endl;
-#endif
-            }
-            else {
-#ifdef debug
-    qDebug() << "Could not create MOD folder!" << endl;
-#endif
-        }
-
-        dir.cd("listmode");
-        lm_root=dir.absolutePath();
-        dir.cd("../MCA");
-        mca_root=dir.absolutePath();
-        dir.cd("../statistics");
-        stat_root=dir.absolutePath();
-        dir.cd("../mod_statistics");
-        mod_root=dir.absolutePath();
-        dir.cd("../dgf_setups");
-        dgf_root=dir.absolutePath();
-        dir.cd("../");
-        run_root=dir.absolutePath();
-        dir.setPath(dirname);
+    dir.cd("listmode");
+    lm_root=dir.absolutePath();
+    dir.cd("../MCA");
+    mca_root=dir.absolutePath();
+    dir.cd("../statistics");
+    stat_root=dir.absolutePath();
+    dir.cd("../mod_statistics");
+    mod_root=dir.absolutePath();
+    dir.cd("../dgf_setups");
+    dgf_root=dir.absolutePath();
+    dir.cd("../");
+    run_root=dir.absolutePath();
+    dir.setPath(dirname);
 
 
-        ratesFile=run_root+"/"+QString::number(runnum)+".rates";
-	qDebug() << "Rates are going to be stored in " << ratesFile;
+    ratesFile=run_root+"/"+QString::number(runnum)+".rates";
+    QString header="#TIME\t";
 
-        emit textOutput("All Runfolders created!");
+    for(unsigned int i=0; i<detnames.size(); i++){
+        header+=detnames.at(i)+"\t";
+    }
+    header+="\n";
+
+    QFile output(ratesFile);
+
+    if(output.exists()){
+        output.open(QIODevice::Append);
+    }
+    else{
+        output.open(QIODevice::WriteOnly);
+    }
+    output.write(header.toLatin1());
+    output.close();
+
+
+    #ifdef debug
+        qDebug() << "Rates are going to be stored in " << ratesFile;
+    #endif
+
+    emit textOutput("All Runfolders created!");
 }
 
 /*---------------------------------daqbuffer_clear()------------------------*/
@@ -920,6 +971,7 @@ void XiaStarter::writerTimeOut(){
         writer->kill();
         writer->waitForFinished(1000);
 
+
         emit textOutput("Subrun stopped after writer timed out!");
         lRunint++;
 
@@ -932,7 +984,7 @@ void XiaStarter::writerTimeOut(){
             newWriterRun();
             copyMODStats();
 
-#ifdef debugMOD
+#ifdef debug
             qDebug() << "copyMODStats beendet.";
 #endif
         }
@@ -1301,25 +1353,20 @@ void XiaStarter::getRates(){
         double zeit=(double) t.elapsed()/1000;
         ratestime.push_back(zeit);
         int datasize=ratestime.size();
-        QString content;
+        ratesLoop++;
 
-        if(datasize>1000){
-            if(ratestime.size()>=1){
-                content=QString::number(ratestime.at(0))+"\t";
-                ratestime.pop_front();
-            }
-            else{
-                qDebug() << "ERROR: ratestime.at(0) does not exist! (XiaStarter::getRates())";
-            }
-
-            for(unsigned int i=0; i< rates.size(); i++){
-                if(rates.at(i).size()>=1){
-                    content+=QString::number(rates.at(i).at(0))+"\t";
-                    rates.at(i).pop_front();
-                }
-                else{
-                    qDebug() << "ERROR: rates.at("<<i<<").at(0) does not exist! (XiaStarter::getRates())";
-                    continue;
+        if(ratesLoop>=1000){
+            QString content;
+            for(unsigned int i=0; i<ratestime.size(); i++){
+                content=QString::number(ratestime.at(i))+"\t";
+                for(unsigned int j=0; j<rates.size(); j++){
+                    if(rates.size()>i){
+                        content+=QString::number(rates.at(j).at(i))+"\t";
+                    }
+                    else{
+                        qDebug() << "ERROR: rates.at("<<j<<").at(i) does not exist! i="<<i<<" (XiaStarter::getRates())";
+                        continue;
+                    }
                 }
             }
 
@@ -1333,12 +1380,32 @@ void XiaStarter::getRates(){
             else{
                 output.open(QIODevice::WriteOnly);
             }
-            output.write(content.toAscii());
+            output.write(content.toLatin1());
             output.close();
+            ratesLoop=0;
+        }
+
+        if(datasize>1000){
+            if(ratestime.size()>=1){
+                ratestime.pop_front();
+            }
+            else{
+                qDebug() << "ERROR: ratestime.at(0) does not exist! (XiaStarter::getRates())";
+            }
+
+            for(unsigned int i=0; i< rates.size(); i++){
+                if(rates.at(i).size()>=1){
+                    rates.at(i).pop_front();
+                }
+                else{
+                    qDebug() << "ERROR: rates.at("<<i<<").at(0) does not exist! (XiaStarter::getRates())";
+                    continue;
+                }
+            }
         }
 
         ratetimer = new QTimer(this);
-        ratetimer->singleShot(5000, this, SLOT(getRates()));
+        ratetimer->singleShot(1000, this, SLOT(getRates()));
         emit ratesDataChanged();
         QString runNum=QString::number(runnum);
         QString subRunNum=QString::number(subrunnum);
@@ -1574,7 +1641,10 @@ void XiaStarter::lmViewLatest(){
 }
 
 void XiaStarter::readCalList(){
-    QFile file("./xs.cal");
+    QString xsFolder=getenv("HOME");
+    xsFolder+="/.xs/";
+
+    QFile file(xsFolder+"xs.cal");
 
     if(file.exists()){
         if(file.open(QIODevice::ReadOnly)){
@@ -1681,7 +1751,9 @@ void XiaStarter::loadDetSettings(QString settingsFile){
     else qDebug() << "couldn't open file" << settingsFile;
    file.close();
 
-   QFile calFile("./xs.cal");
+   QString xsFolder=getenv("HOME");
+   xsFolder+="/.xs/";
+   QFile calFile(xsFolder+"xs.cal");
    QString text="";
 
    for(unsigned int i=0; i<det.size(); i++){
