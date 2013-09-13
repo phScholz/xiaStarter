@@ -58,6 +58,7 @@ XiaStarterWindow::XiaStarterWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::XiaStarterWindow)
 {
+    version="0.3.5";
     QString home, xsFile;
     home=getenv("HOME");
     xsFile=home+"/.xs/.xs";
@@ -203,7 +204,7 @@ XiaStarterWindow::XiaStarterWindow(QWidget *parent) :
     connect(xs, SIGNAL(copyingMCAFiles(bool)), ui->stopButton, SLOT(setDisabled(bool)));
     connect(ui->subrunsButton, SIGNAL(clicked()), xs, SLOT(lmViewLastTwo()));
 
-    setWindowTitle("xiaStarter" + version);
+    setWindowTitle("xiaStarter " + version);
 
     writeOutput("XiaStarter has been started!");
 }
@@ -288,12 +289,12 @@ void XiaStarterWindow::writeOutput(const QString& msg){
         t.start();
         QString output="[";
         output.append(date.toString());
-        output.append("|");
+        output.append(" | ");
         output.append(t.toString());
         output.append("] ");
         output.append(msg);
         ui->outputBox->appendPlainText(output);
-        qDebug()<< output;
+        qDebug() << output;
 }
 
 void XiaStarterWindow::sourceconf_clicked(){
@@ -333,7 +334,7 @@ void XiaStarterWindow::on_closeButton_clicked()
         xsFolder+="/.xs/";
         QFile file(xsFolder+"xs.log");
         QString log=ui->outputBox->toPlainText();
-        log+="\n";
+        log+="\n\n\n";
 
         if(file.open(QIODevice::Append| QIODevice::Text)){
             file.write(log.toLatin1());

@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
     }
 
     if(h){
-        qDebug() << "\n\n USAGE:\txiaStarter <para>\n\n\t -h/--help\tDisplays this.\n\t -fs/--force-start\tIgnores that the \".xs\" file exists. Also if there is another of instance of xiaStarter running, the program will start anyway.";
+        qDebug() << "\n\n USAGE:\txiaStarter <para>\n\n\t -h/--help\t\tDisplays this.\n\t -fs/--force-start\t\tIgnores that the \".xs\" file exists. Also if there is another of instance of xiaStarter running, the program will start anyway.\n\n\n";
         exit(1);
     }
 
