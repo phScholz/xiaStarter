@@ -88,7 +88,7 @@ public slots:
     void viewButtons(bool b);
     void prefTabChanged(int);
     void ratesContextMenuRequest(QPoint);
-    void radioChanged(bool);
+    void radioChanged(bool check);
 
 
 

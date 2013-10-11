@@ -1,4 +1,18 @@
 ************************
+Patch xs0.3.5 to xs0.3.6
+************************
+
+General:
+	- removed residual dgf_show output ... is now only visible if "debug" is defined
+
+"Rates-Plot"-tab:
+	- limit of for-loop was reduced to ratestime.size()-1 in order to get rid of the error that the last element of rates.at(j).at(i) does not exist
+
+"Listmode View"-tab:
+	- experimentator can now choose between tv and hdtv 
+
+
+************************
 Patch xs0.3.4 to xs0.3.5
 ************************
 

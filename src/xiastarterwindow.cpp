@@ -58,7 +58,7 @@ XiaStarterWindow::XiaStarterWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::XiaStarterWindow)
 {
-    version="0.3.5";
+    version="0.3.6";
     QString home, xsFile;
     home=getenv("HOME");
     xsFile=home+"/.xs/.xs";
