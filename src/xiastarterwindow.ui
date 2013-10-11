@@ -56,7 +56,7 @@
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="infoTab">
      <attribute name="title">
@@ -845,6 +845,40 @@ p, li { white-space: pre-wrap; }
         </spacer>
        </item>
        <item>
+        <widget class="QLabel" name="viewerLabel">
+         <property name="text">
+          <string>Spectra viewer:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="tvRadio">
+         <property name="text">
+          <string>tv</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="hdtvRadio">
+         <property name="text">
+          <string>hdtv</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
         <widget class="QPushButton" name="subrunsButton">
          <property name="text">
           <string>View last two subruns</string>
@@ -1095,7 +1129,7 @@ p, li { white-space: pre-wrap; }
      <x>0</x>
      <y>0</y>
      <width>850</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_Settings">

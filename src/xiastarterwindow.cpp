@@ -98,6 +98,11 @@ XiaStarterWindow::XiaStarterWindow(QWidget *parent) :
     ui->detCombo->addItem("Silicons");
     ui->plotRatesCheck->setEnabled(0);
     ui->scopeButton->setEnabled(0);
+    ui->tvRadio->setChecked(true);
+    ui->hdtvRadio->setChecked(false);
+
+    connect(ui->tvRadio, SIGNAL(toggled(bool)), this, SLOT(radioChanged(bool)));
+    connect(ui->hdtvRadio, SIGNAL(toggled(bool)), this, SLOT(radioChanged(bool)));
 
     //mcaPlot Settings
     ui->mcaPlot->setRangeDrag(Qt::Vertical| Qt::Horizontal);
@@ -180,6 +185,8 @@ XiaStarterWindow::XiaStarterWindow(QWidget *parent) :
     connect(ui->loopBox, SIGNAL(valueChanged(int)), xs, SLOT(setLoopint(int)));
     connect(ui->utimeRadio, SIGNAL(toggled(bool)),xs, SLOT(setUTimeRadio(bool)));
     connect(ui->ftimeRadio, SIGNAL(toggled(bool)), xs, SLOT(setFTimeRadio(bool)));
+    connect(ui->tvRadio, SIGNAL(toggled(bool)),xs, SLOT(setTVRadio(bool)));
+    connect(ui->hdtvRadio, SIGNAL(toggled(bool)), xs, SLOT(setHDTVRadio(bool)));
     connect(xs, SIGNAL(ratesDataChanged()), this, SLOT(plotRates()));
     connect(xs, SIGNAL(collectorState(QProcess::ProcessState)), this, SLOT(collectorStatus(QProcess::ProcessState)));
     connect(xs, SIGNAL(writerState(QProcess::ProcessState)), this, SLOT(writerStatus(QProcess::ProcessState)));
@@ -213,6 +220,25 @@ XiaStarterWindow::~XiaStarterWindow()
 {
     delete ui;
     delete xs;
+}
+
+void XiaStarterWindow::radioChanged(bool check){
+    QObject *s=sender();
+    QString sendername;
+
+    if(s){
+        sendername=s->objectName();
+
+        if(sendername=="tvRadio"){
+            ui->hdtvRadio->setChecked(!check);
+        }
+
+        if(sendername=="hdtvRadio"){
+            ui->tvRadio->setChecked(!check);
+        }
+    }
+
+
 }
 
 /*-----------------------------------changeStatus()--------------------------------

@@ -62,7 +62,7 @@ class XiaStarterWindow : public QMainWindow
     Q_OBJECT
     
 public:
-    const QString version;
+    QString version;
     QPalette green1;
     QPalette green2;
     QPalette yellow1;
@@ -88,6 +88,7 @@ public slots:
     void viewButtons(bool b);
     void prefTabChanged(int);
     void ratesContextMenuRequest(QPoint);
+    void radioChanged(bool);
 
 
 

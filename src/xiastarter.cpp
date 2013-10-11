@@ -318,6 +318,14 @@ void XiaStarter::setFTimeRadio(bool check){
     ftimeradio=check;
 }
 
+void XiaStarter::setTVRadio(bool check){
+    tvradio=check;
+}
+
+void XiaStarter::setHDTVRadio(bool check){
+    hdtvradio=check;
+}
+
 void XiaStarter::setCrate(QString string){
     crate=string;
 }
@@ -1433,48 +1441,111 @@ void XiaStarter::getFileSize(){
 
 void XiaStarter::lmViewAll(){
 
-    if(subrunnum>1){
-        QString mcaSpectrum, prog="tv -e \"", sSubrun1=QString::number(subrunnum-1);
-        QProcess *viewall = new QProcess(this);
+    if(tvradio){
 
-        if(subrunnum-1 <10){
-            sSubrun1.prepend("000");
-        }
+        if(subrunnum>1){
+            QString mcaSpectrum, prog="tv -e \"", sSubrun1=QString::number(subrunnum-1);
+            QProcess *viewall = new QProcess(this);
 
-        if(subrunnum-1 <100 && subrunnum-1>=10){
-            sSubrun1.prepend("00");
-        }
-
-        if(subrunnum-1 <1000 && subrunnum-1>=100){
-            sSubrun1.prepend("0");
-        }
-
-        int j=0;
-
-        for(unsigned int i=0; i<det.size(); i++){
-            if((showDets==0) || (showDets==1 && det.at(i).getDetType()=="Germanium") || (showDets==2 && det.at(i).getDetType()=="Silicon")){
-                QString num=QString::number(j);
-                mcaSpectrum =mca_root+"/"+sSubrun1+"/";
-                mcaSpectrum+=det.at(i).getName()+".spc";
-                prog+="s g "+ mcaSpectrum + "; ";
-                prog+="c p r "+ det.at(i).getCalFilePath() + " " + num +"; ";
-                j++;
+            if(subrunnum-1 <10){
+                sSubrun1.prepend("000");
             }
+
+            if(subrunnum-1 <100 && subrunnum-1>=10){
+                sSubrun1.prepend("00");
+            }
+
+            if(subrunnum-1 <1000 && subrunnum-1>=100){
+                sSubrun1.prepend("0");
+            }
+
+            int j=0;
+
+            for(unsigned int i=0; i<det.size(); i++){
+                if((showDets==0) || (showDets==1 && det.at(i).getDetType()=="Germanium") || (showDets==2 && det.at(i).getDetType()=="Silicon")){
+                    QString num=QString::number(j);
+                    mcaSpectrum =mca_root+"/"+sSubrun1+"/";
+                    mcaSpectrum+=det.at(i).getName()+".spc";
+                    prog+="s g "+ mcaSpectrum + "; ";
+                    prog+="c p r "+ det.at(i).getCalFilePath() + " " + num +"; ";
+                    j++;
+                }
+            }
+            prog+="\"";
+
+            #ifdef debug
+                qDebug() << "XiaStarter::lmViewAll() script ...";
+                qDebug() << prog;
+            #endif
+
+            viewall->startDetached(prog);
         }
-        prog+="\"";
-
-        #ifdef debug
-            qDebug() << "XiaStarter::lmViewAll() script ...";
-            qDebug() << prog;
-        #endif
-
-        viewall->startDetached(prog);
+        else{
+            QMessageBox msgBox;
+            msgBox.setIcon(QMessageBox::Information);
+            msgBox.setText("Sorry, the MCA spectra are not yet available. Please try again after the first subrun!");
+            msgBox.exec();
+        }
     }
-    else{
-        QMessageBox msgBox;
-        msgBox.setIcon(QMessageBox::Information);
-        msgBox.setText("Sorry, the MCA spectra are not yet available. Please try again after the first subrun!");
-        msgBox.exec();
+
+    if(hdtvradio){
+        if(subrunnum>1){
+            QString mcaSpectrum, prog="hdtv -b ", sSubrun1=QString::number(subrunnum-1), fileContent="";
+            QProcess *viewall = new QProcess(this);
+
+            if(subrunnum-1 <10){
+                sSubrun1.prepend("000");
+            }
+
+            if(subrunnum-1 <100 && subrunnum-1>=10){
+                sSubrun1.prepend("00");
+            }
+
+            if(subrunnum-1 <1000 && subrunnum-1>=100){
+                sSubrun1.prepend("0");
+            }
+
+            int j=0;
+
+            for(unsigned int i=0; i<det.size(); i++){
+                if((showDets==0) || (showDets==1 && det.at(i).getDetType()=="Germanium") || (showDets==2 && det.at(i).getDetType()=="Silicon")){
+                    QString num=QString::number(j);
+                    mcaSpectrum =mca_root+"/"+sSubrun1+"/";
+                    mcaSpectrum+=det.at(i).getName()+".spc";
+                    fileContent+="spectrum get "+ mcaSpectrum + "; ";
+                    fileContent="calibration position read -s "+ num +" "+ det.at(i).getCalFilePath() + "; ";
+                    j++;
+                }
+            }
+
+            QFile file("./viewTemp");
+            if(file.open(QIODevice::WriteOnly)){
+                file.write(fileContent.toLatin1());
+                file.close();
+            }
+            else{
+                QMessageBox msgBox;
+                msgBox.setIcon(QMessageBox::Warning);
+                msgBox.setText("Could not open temporary file with hdtv-commands. Please use tv instead!");
+                msgBox.exec();
+            }
+
+            prog+="./viewTemp";
+
+            #ifdef debug
+                qDebug() << "XiaStarter::lmViewAll() script ...";
+                qDebug() << prog;
+            #endif
+
+            viewall->startDetached(prog);
+        }
+        else{
+            QMessageBox msgBox;
+            msgBox.setIcon(QMessageBox::Information);
+            msgBox.setText("Sorry, the MCA spectra are not yet available. Please try again after the first subrun!");
+            msgBox.exec();
+        }
+
     }
 }
 
@@ -1495,64 +1566,140 @@ void XiaStarter::lmViewLastTwo(){
         int ret=dialog->exec();
 
         if(ret == QDialog::Accepted){
+            if(tvradio){
 
-            QString mcaSpectrum, prog="tv -e \"", sSubrun1=QString::number(subrunnum-1), sSubrun2=QString::number(subrunnum-2), cmd, num1, num2;
-            QVector <QString> mcaSpectra;
-            QProcess *viewlatest = new QProcess(this);
+                QString mcaSpectrum, prog="tv -e \"", sSubrun1=QString::number(subrunnum-1), sSubrun2=QString::number(subrunnum-2), cmd, num1, num2;
+                QVector <QString> mcaSpectra;
+                QProcess *viewlatest = new QProcess(this);
 
-            if(subrunnum-1 <10){
-                sSubrun1.prepend("000");
-            }
-
-            if(subrunnum-1 <100 && subrunnum-1>=10){
-                sSubrun1.prepend("00");
-            }
-
-            if(subrunnum-1 <1000 && subrunnum-1>=100){
-                sSubrun1.prepend("0");
-            }
-
-            if(subrunnum-2 <10){
-                sSubrun2.prepend("000");
-            }
-
-            if(subrunnum-2 <100 && subrunnum-1>=10){
-                sSubrun2.prepend("00");
-            }
-
-            if(subrunnum-2 <1000 && subrunnum-1>=100){
-                sSubrun2.prepend("0");
-            }
-
-            int j=0;
-
-            for(unsigned int i=0; i<det.size(); i++){
-                if(det.at(i).getName()==dialog->textValue()){
-
-                    num1.setNum(j);
-                    num2.setNum(j+1);
-                    mcaSpectrum = mca_root+"/"+sSubrun1+"/";
-                    mcaSpectrum+= det.at(i).getName()+".spc ";
-                    prog+="s r "+ mcaSpectrum + num1 + "; ";
-
-                    mcaSpectrum = mca_root+"/"+sSubrun2+"/";
-                    mcaSpectrum+= det.at(i).getName()+".spc ";
-                    prog+="s r "+ mcaSpectrum + num2 + "; ";
-
-                    prog+="c p r "+ det.at(i).getCalFilePath() + " " + num1 +" " + num2+"; ";
-
-                    j++;
+                if(subrunnum-1 <10){
+                    sSubrun1.prepend("000");
                 }
+
+                if(subrunnum-1 <100 && subrunnum-1>=10){
+                    sSubrun1.prepend("00");
+                }
+
+                if(subrunnum-1 <1000 && subrunnum-1>=100){
+                    sSubrun1.prepend("0");
+                }
+
+                if(subrunnum-2 <10){
+                    sSubrun2.prepend("000");
+                }
+
+                if(subrunnum-2 <100 && subrunnum-1>=10){
+                    sSubrun2.prepend("00");
+                }
+
+                if(subrunnum-2 <1000 && subrunnum-1>=100){
+                    sSubrun2.prepend("0");
+                }
+
+                int j=0;
+
+                for(unsigned int i=0; i<det.size(); i++){
+                    if(det.at(i).getName()==dialog->textValue()){
+
+                        num1.setNum(j);
+                        num2.setNum(j+1);
+                        mcaSpectrum = mca_root+"/"+sSubrun1+"/";
+                        mcaSpectrum+= det.at(i).getName()+".spc ";
+                        prog+="s r "+ mcaSpectrum + num1 + "; ";
+
+                        mcaSpectrum = mca_root+"/"+sSubrun2+"/";
+                        mcaSpectrum+= det.at(i).getName()+".spc ";
+                        prog+="s r "+ mcaSpectrum + num2 + "; ";
+
+                        prog+="c p r "+ det.at(i).getCalFilePath() + " " + num1 +" " + num2+"; ";
+
+                        j++;
+                    }
+                }
+
+                prog+="\"";
+
+                #ifdef debug
+                    qDebug() << "XiaStarter::lmViewLastTwo() script ...";
+                    qDebug() << prog;
+                #endif
+
+                viewlatest->startDetached(prog);
             }
 
-            prog+="\"";
+            if(hdtvradio){
 
-            #ifdef debug
-                qDebug() << "XiaStarter::lmViewLastTwo() script ...";
-                qDebug() << prog;
-            #endif
+                QString mcaSpectrum, prog="hdtv -b ", sSubrun1=QString::number(subrunnum-1), sSubrun2=QString::number(subrunnum-2), cmd, num1, num2, fileContent;
+                QVector <QString> mcaSpectra;
+                QProcess *viewlatest = new QProcess(this);
 
-            viewlatest->startDetached(prog);
+                if(subrunnum-1 <10){
+                    sSubrun1.prepend("000");
+                }
+
+                if(subrunnum-1 <100 && subrunnum-1>=10){
+                    sSubrun1.prepend("00");
+                }
+
+                if(subrunnum-1 <1000 && subrunnum-1>=100){
+                    sSubrun1.prepend("0");
+                }
+
+                if(subrunnum-2 <10){
+                    sSubrun2.prepend("000");
+                }
+
+                if(subrunnum-2 <100 && subrunnum-1>=10){
+                    sSubrun2.prepend("00");
+                }
+
+                if(subrunnum-2 <1000 && subrunnum-1>=100){
+                    sSubrun2.prepend("0");
+                }
+
+                int j=0;
+
+                for(unsigned int i=0; i<det.size(); i++){
+                    if(det.at(i).getName()==dialog->textValue()){
+
+                        num1.setNum(j);
+                        num2.setNum(j+1);
+                        mcaSpectrum = mca_root+"/"+sSubrun1+"/";
+                        mcaSpectrum+= det.at(i).getName()+".spc ";
+                        fileContent+="spectrum get -s "+ num1 + mcaSpectrum"; ";
+
+                        mcaSpectrum = mca_root+"/"+sSubrun2+"/";
+                        mcaSpectrum+= det.at(i).getName()+".spc ";
+                        fileContent+="spectrum get -s "+ num2 + mcaSpectrum"; ";
+
+                        fileContent+="calibration position read -s "+ num1 + " " + det.at(i).getCalFilePath()+"; ";
+                        fileContent+="calibration position read -s "+ num2 + " " + det.at(i).getCalFilePath()+"; ";
+
+                        j++;
+                    }
+                }
+
+                QFile file("./viewTemp");
+                if(file.open(QIODevice::WriteOnly)){
+                    file.write(fileContent.toLatin1());
+                    file.close();
+                }
+                else{
+                    QMessageBox msgBox;
+                    msgBox.setIcon(QMessageBox::Warning);
+                    msgBox.setText("Could not open temporary file with hdtv-commands. Please use tv instead!");
+                    msgBox.exec();
+                }
+
+                prog+="./viewTemp";
+
+                #ifdef debug
+                    qDebug() << "XiaStarter::lmViewLastTwo() script ...";
+                    qDebug() << prog;
+                #endif
+
+                viewlatest->startDetached(prog);
+            }
         }
     }
     else{

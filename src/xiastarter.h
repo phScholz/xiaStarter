@@ -72,6 +72,8 @@ public:
 
     bool utimeradio;
     bool ftimeradio;
+    bool tvradio;
+    bool hdtvradio;
 
     int mcaCrate;
     int mcaTime;
@@ -128,6 +130,8 @@ public slots:
     void setMCAtime(QString);
     void setUTimeRadio(bool);
     void setFTimeRadio(bool);
+    void setTVRadio(bool);
+    void setHDTVRadio(bool);
 
     void startCollector();
     void startWriter();
