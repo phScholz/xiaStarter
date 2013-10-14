@@ -339,11 +339,12 @@ void XiaStarter::startCollector(){
     connect(collector, SIGNAL(started()), this, SLOT(getRates()));
     connect(collector, SIGNAL(error(QProcess::ProcessError)), this, SLOT(collectorError(QProcess::ProcessError)));
     connect(collector, SIGNAL(stateChanged(QProcess::ProcessState)), this, SLOT(collectorStateChanged(QProcess::ProcessState)));
+    connect(collector, SIGNAL(readyReadStandardError()), this, SLOT(showStdtErrorBox()));
 
-    collector->setReadChannel(QProcess::StandardOutput);
+
     collector->start(program);
     t.restart();
-    //collector->waitForStarted(1000);
+
 }
 
 void XiaStarter::collectorError(QProcess::ProcessError error){
@@ -389,7 +390,8 @@ void XiaStarter::startWriter(){
         connect(writer, SIGNAL(started()), this, SLOT(writerStarted()));
         connect(writer, SIGNAL(error(QProcess::ProcessError)), this, SLOT(writerError(QProcess::ProcessError)));
         connect(writer, SIGNAL(stateChanged(QProcess::ProcessState)), this, SLOT(writerStateChanged(QProcess::ProcessState)));
-        writer->setReadChannel(QProcess::StandardOutput);
+        connect(writer, SIGNAL(readyReadStandardError()), this, SLOT(showStdtErrorBox()));
+
         writer->start(program);
         qDebug() <<"Wait for Writer to be started ...";
 }
@@ -2033,5 +2035,42 @@ void XiaStarter::setMCARates(int num){
 
 void XiaStarter::getMCARates(QString text){
     text+="lol";
+}
+
+void XiaStarter::showStdtErrorBox(){
+    //Getting sendername
+    QObject *s=sender();
+    QString sendername;
+    if(s){
+        sendername=s->objectName();
+
+        //Differ between collector and writer
+
+        if(sendername=="collector"){
+            collector->setReadChannel(QProcess::StandardError);
+            QByteArray errorMsg;
+            //reading all Standard Error
+            errorMsg= collector->readAllStandardError();
+            QString message(errorMsg);
+            //Showing Messagebox with stderror!
+            QMessageBox msgBox;
+            msgBox.setIcon(QMessageBox::Warning);
+            msgBox.setText(message);
+            msgBox.exec();
+        }
+
+        if(sendername=="writer"){
+            writer->setReadChannel(QProcess::StandardError);
+            QByteArray errorMsg;
+            //reading all Standard Error
+            errorMsg= writer->readAllStandardError();
+            QString message(errorMsg);
+            //Showing Messagebox with stderror!
+            QMessageBox msgBox;
+            msgBox.setIcon(QMessageBox::Warning);
+            msgBox.setText(message);
+            msgBox.exec();
+        }
+    }
 }
 

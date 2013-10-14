@@ -171,6 +171,8 @@ public slots:
 
     void getMCARates(QString);
 
+    void showStdtErrorBox();
+
 
 
 
