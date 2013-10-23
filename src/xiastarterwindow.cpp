@@ -1040,8 +1040,13 @@ void XiaStarterWindow::loadDefaultSettings(){
 }
 
 void XiaStarterWindow::loadLastSettings(){
-    xs->loadDetSettings("./last.xss");
-    QFile file("./last.xss");
+
+    QString xsFolder=getenv("HOME");
+    xsFolder+="/.xs/";
+
+    xs->loadDetSettings(xsFolder+"last.xss");
+
+    QFile file(xsFolder+"last.xss");
 
     if(!file.open(QIODevice::ReadOnly)){
         QMessageBox::critical(this,
