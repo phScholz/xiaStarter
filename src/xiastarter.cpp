@@ -1514,8 +1514,8 @@ void XiaStarter::lmViewAll(){
                     QString num=QString::number(j);
                     mcaSpectrum =mca_root+"/"+sSubrun1+"/";
                     mcaSpectrum+=det.at(i).getName()+".spc";
-                    fileContent+="spectrum get "+ mcaSpectrum + "; ";
-                    fileContent+="calibration position read -s "+ num +" "+ det.at(i).getCalFilePath() + "; ";
+                    fileContent+="spectrum get "+ mcaSpectrum + "\n";
+                    fileContent+="calibration position read -s "+ num +" "+ det.at(i).getCalFilePath() + "\n";
                     j++;
                 }
             }
@@ -1670,14 +1670,14 @@ void XiaStarter::lmViewLastTwo(){
                         num2.setNum(j+1);
                         mcaSpectrum = mca_root+"/"+sSubrun1+"/";
                         mcaSpectrum+= det.at(i).getName()+".spc ";
-                        fileContent+="spectrum get -s "+ num1 + mcaSpectrum +"; ";
+                        fileContent+="spectrum get -s "+ num1 + mcaSpectrum +"\n";
 
                         mcaSpectrum = mca_root+"/"+sSubrun2+"/";
                         mcaSpectrum+= det.at(i).getName()+".spc ";
-                        fileContent+="spectrum get -s "+ num2 + mcaSpectrum +"; ";
+                        fileContent+="spectrum get -s "+ num2 + mcaSpectrum +"\n";
 
-                        fileContent+="calibration position read -s "+ num1 + " " + det.at(i).getCalFilePath()+"; ";
-                        fileContent+="calibration position read -s "+ num2 + " " + det.at(i).getCalFilePath()+"; ";
+                        fileContent+="calibration position read -s "+ num1 + " " + det.at(i).getCalFilePath()+"\n";
+                        fileContent+="calibration position read -s "+ num2 + " " + det.at(i).getCalFilePath()+"\n";
 
                         j++;
                     }
@@ -1833,15 +1833,15 @@ void XiaStarter::lmViewLatest(){
                     num2.setNum(j+1);
                     mcaSpectrum = mca_root+"/"+sSubrun1+"/";
                     mcaSpectrum+= det.at(i).getName()+".spc ";
-                    fileContent+="spectrum get -s "+ num1 +" " + mcaSpectrum+"; ";
+                    fileContent+="spectrum get -s "+ num1 +" " + mcaSpectrum+"\n";
 
                     mcaSpectrum = mca_root+"/"+sSubrun2+"/";
                     mcaSpectrum+= det.at(i).getName()+".spc ";
-                    fileContent+="spectrum get -s " + num2 + " "+ mcaSpectrum+"; ";
+                    fileContent+="spectrum get -s " + num2 + " "+ mcaSpectrum+"\n";
 
-                    fileContent+="spectrum substract "+ num1 + " " + num2 + "; ";
-                    fileContent="spectrum delete "+ num2 + "; ";
-                    fileContent+="calibration position read -s "+ num1 + " "+ det.at(i).getCalFilePath() + "; ";
+                    fileContent+="spectrum substract "+ num1 + " " + num2 + "\n";
+                    fileContent+="spectrum delete "+ num2 + "\n";
+                    fileContent+="calibration position read -s "+ num1 + " "+ det.at(i).getCalFilePath() + "\n";
 
                     j++;
                 }

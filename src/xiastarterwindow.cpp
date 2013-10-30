@@ -58,7 +58,7 @@ XiaStarterWindow::XiaStarterWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::XiaStarterWindow)
 {
-    version="0.3.6";
+    version="0.4";
     QString home, xsFile;
     home=getenv("HOME");
     xsFile=home+"/.xs/.xs";
@@ -100,6 +100,8 @@ XiaStarterWindow::XiaStarterWindow(QWidget *parent) :
     ui->scopeButton->setEnabled(0);
     ui->tvRadio->setChecked(true);
     ui->hdtvRadio->setChecked(false);
+    xs->hdtvradio=false;
+    xs->tvradio=true;
     ui->terminalCheck->setChecked(false);
     collectorTerminal=false;
 
@@ -572,10 +574,10 @@ void XiaStarterWindow::on_stopButton_clicked(){
             number+=in.readLine();
         }
         file.close();
-        qDebug()<<number;
+        //qDebug()<<number;
         QProcess killCollector;
         QString command="kill -9 "+number;
-        qDebug() << command;
+        //qDebug() << command;
         killCollector.execute(command);
     }
 
@@ -1002,10 +1004,10 @@ void XiaStarterWindow::on_killButton_clicked()
             number+=in.readLine();
         }
         file.close();
-        qDebug()<<number;
+        //qDebug()<<number;
         QProcess killCollector;
         QString command="kill -9 "+number;
-        qDebug() << command;
+        //qDebug() << command;
         killCollector.execute(command);
     }
     xs->killCollector();
