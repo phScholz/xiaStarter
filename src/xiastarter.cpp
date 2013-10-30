@@ -339,12 +339,10 @@ void XiaStarter::startCollector(){
     connect(collector, SIGNAL(started()), this, SLOT(getRates()));
     connect(collector, SIGNAL(error(QProcess::ProcessError)), this, SLOT(collectorError(QProcess::ProcessError)));
     connect(collector, SIGNAL(stateChanged(QProcess::ProcessState)), this, SLOT(collectorStateChanged(QProcess::ProcessState)));
-    connect(collector, SIGNAL(readyReadStandardError()), this, SLOT(showStdtErrorBox()));
+    //connect(collector, SIGNAL(readyReadStandardOutput()), this, SLOT(showStdtErrorBox()));
 
-
-    collector->start(program);
     t.restart();
-
+    collector->start(program);
 }
 
 void XiaStarter::collectorError(QProcess::ProcessError error){
@@ -390,7 +388,7 @@ void XiaStarter::startWriter(){
         connect(writer, SIGNAL(started()), this, SLOT(writerStarted()));
         connect(writer, SIGNAL(error(QProcess::ProcessError)), this, SLOT(writerError(QProcess::ProcessError)));
         connect(writer, SIGNAL(stateChanged(QProcess::ProcessState)), this, SLOT(writerStateChanged(QProcess::ProcessState)));
-        connect(writer, SIGNAL(readyReadStandardError()), this, SLOT(showStdtErrorBox()));
+       // connect(writer, SIGNAL(readyReadStandardError()), this, SLOT(showStdtErrorBox()));
 
         writer->start(program);
         qDebug() <<"Wait for Writer to be started ...";
@@ -1517,14 +1515,16 @@ void XiaStarter::lmViewAll(){
                     mcaSpectrum =mca_root+"/"+sSubrun1+"/";
                     mcaSpectrum+=det.at(i).getName()+".spc";
                     fileContent+="spectrum get "+ mcaSpectrum + "; ";
-                    fileContent="calibration position read -s "+ num +" "+ det.at(i).getCalFilePath() + "; ";
+                    fileContent+="calibration position read -s "+ num +" "+ det.at(i).getCalFilePath() + "; ";
                     j++;
                 }
             }
 
-            QFile file("./viewTemp");
+            QString xsFolder=getenv("HOME");
+            xsFolder+="/.xs/";
+            QFile file(xsFolder+"viewTemp");
             if(file.open(QIODevice::WriteOnly)){
-                file.write(fileContent.toLatin1());
+                file.write(fileContent.toAscii());
                 file.close();
             }
             else{
@@ -1534,7 +1534,7 @@ void XiaStarter::lmViewAll(){
                 msgBox.exec();
             }
 
-            prog+="./viewTemp";
+            prog+=xsFolder+"viewTemp";
 
             #ifdef debug
                 qDebug() << "XiaStarter::lmViewAll() script ...";
@@ -1683,9 +1683,11 @@ void XiaStarter::lmViewLastTwo(){
                     }
                 }
 
-                QFile file("./viewTemp");
+                QString xsFolder=getenv("HOME");
+                xsFolder+="/.xs/";
+                QFile file(xsFolder+"viewTemp");
                 if(file.open(QIODevice::WriteOnly)){
-                    file.write(fileContent.toLatin1());
+                    file.write(fileContent.toAscii());
                     file.close();
                 }
                 else{
@@ -1695,7 +1697,7 @@ void XiaStarter::lmViewLastTwo(){
                     msgBox.exec();
                 }
 
-                prog+="./viewTemp";
+                prog+=xsFolder+"viewTemp";
 
                 #ifdef debug
                     qDebug() << "XiaStarter::lmViewLastTwo() script ...";
@@ -1844,10 +1846,11 @@ void XiaStarter::lmViewLatest(){
                     j++;
                 }
             }
-
-            QFile file("./viewTemp");
+            QString xsFolder=getenv("HOME");
+            xsFolder+="/.xs/";
+            QFile file(xsFolder+"viewTemp");
             if(file.open(QIODevice::WriteOnly)){
-                file.write(fileContent.toLatin1());
+                file.write(fileContent.toAscii());
                 file.close();
             }
             else{
@@ -1857,7 +1860,7 @@ void XiaStarter::lmViewLatest(){
                 msgBox.exec();
             }
 
-            prog+="./viewTemp";
+            prog+=xsFolder+"viewTemp";
 
 
             #ifdef debug
@@ -2050,7 +2053,7 @@ void XiaStarter::showStdtErrorBox(){
             collector->setReadChannel(QProcess::StandardError);
             QByteArray errorMsg;
             //reading all Standard Error
-            errorMsg= collector->readAllStandardError();
+            errorMsg= collector->readAllStandardOutput();
             QString message(errorMsg);
             //Showing Messagebox with stderror!
             QMessageBox msgBox;

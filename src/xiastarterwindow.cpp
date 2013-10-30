@@ -50,7 +50,7 @@
 #include <QPalette>
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>
-#include </usr/local/include/mfile.h>
+#include <mfile.h>
 #include <QPen>
 #include "dgfconfig.h"
 
@@ -100,9 +100,13 @@ XiaStarterWindow::XiaStarterWindow(QWidget *parent) :
     ui->scopeButton->setEnabled(0);
     ui->tvRadio->setChecked(true);
     ui->hdtvRadio->setChecked(false);
+    ui->terminalCheck->setChecked(false);
+    collectorTerminal=false;
 
     connect(ui->tvRadio, SIGNAL(toggled(bool)), this, SLOT(radioChanged(bool)));
     connect(ui->hdtvRadio, SIGNAL(toggled(bool)), this, SLOT(radioChanged(bool)));
+    connect(ui->terminalCheck, SIGNAL(clicked(bool)), this, SLOT(setTerminalCheck(bool)));
+
 
     //mcaPlot Settings
     ui->mcaPlot->setRangeDrag(Qt::Vertical| Qt::Horizontal);
@@ -400,6 +404,7 @@ void XiaStarterWindow::on_runButton_clicked(){
 	xs->runStopped=false;
     ui->psaCheck->setEnabled(0);
     ui->runButton->setEnabled(0);
+    ui->terminalCheck->setEnabled(0);
     ui->acheck->setEnabled(0);
     ui->gfltcheck->setEnabled(0);
     ui->ftpwidthcheck->setEnabled(0);
@@ -421,11 +426,17 @@ void XiaStarterWindow::changeSubrunNum(int number){
 }
 
 void XiaStarterWindow::runCollector(){
+    QString program;
 #ifdef unbuffer
     QString program = "unbuffer mb_collector";
 #endif
 #ifndef unbuffer
-    QString program = "mb_collector";
+    if(collectorTerminal){
+        program = "xterm -e \"mb_collector";
+    }
+    else{
+        program = "mb_collector";
+    }
 #endif
 
     //setup arguments
@@ -474,6 +485,10 @@ void XiaStarterWindow::runCollector(){
 
     if(ui->longcheck->checkState()==Qt::Checked){
         program.append(" -l");
+    }
+
+    if(collectorTerminal){
+        program+="\"";
     }
 
     xs->setProgram(program);
@@ -540,6 +555,29 @@ void XiaStarterWindow::on_startButton_clicked()
 }
 
 void XiaStarterWindow::on_stopButton_clicked(){
+    if(collectorTerminal){
+        QString xsFolder=getenv("HOME");
+        xsFolder+="/.xs/";
+
+        QProcess *pidof=new QProcess(this);
+        QString script="pidof mb_collector";
+        pidof->setStandardOutputFile(xsFolder+"pidCol",QIODevice::WriteOnly);
+        pidof->start(script);
+        pidof->waitForFinished(-1);
+        QFile file(xsFolder+"pidCol");
+        file.open(QIODevice::ReadOnly);
+        QTextStream in(&file);
+        QString number;
+        while(!in.atEnd()){
+            number+=in.readLine();
+        }
+        file.close();
+        qDebug()<<number;
+        QProcess killCollector;
+        QString command="kill -9 "+number;
+        qDebug() << command;
+        killCollector.execute(command);
+    }
 
     qDebug()<< "Stopping Writer and Collector!";
     xs->runStopped=true;
@@ -580,7 +618,8 @@ void XiaStarterWindow::on_stopButton_clicked(){
     ui->eventBox->setEnabled(1);
     ui->coincBox->setEnabled(1);
     ui->coinccheck->setEnabled(1);
-    ui->buffercheck->setEnabled(1);    
+    ui->buffercheck->setEnabled(1);
+    ui->terminalCheck->setEnabled(1);
 }
 
 void XiaStarterWindow::on_mcaStartButton_clicked(){
@@ -946,6 +985,29 @@ void XiaStarterWindow::writerStatus(QProcess::ProcessState state){
 
 void XiaStarterWindow::on_killButton_clicked()
 {
+    if(collectorTerminal){
+        QString xsFolder=getenv("HOME");
+        xsFolder+="/.xs/";
+
+        QProcess *pidof=new QProcess(this);
+        QString script="pidof mb_collector";
+        pidof->setStandardOutputFile(xsFolder+"pidCol",QIODevice::WriteOnly);
+        pidof->start(script);
+        pidof->waitForFinished(-1);
+        QFile file(xsFolder+"pidCol");
+        file.open(QIODevice::ReadOnly);
+        QTextStream in(&file);
+        QString number;
+        while(!in.atEnd()){
+            number+=in.readLine();
+        }
+        file.close();
+        qDebug()<<number;
+        QProcess killCollector;
+        QString command="kill -9 "+number;
+        qDebug() << command;
+        killCollector.execute(command);
+    }
     xs->killCollector();
     xs->runStopped=true;
 
@@ -962,6 +1024,7 @@ void XiaStarterWindow::on_killButton_clicked()
     ui->coinccheck->setEnabled(1);
     ui->buffercheck->setEnabled(1);
     ui->psaCheck->setEnabled(1);
+    ui->terminalCheck->setEnabled(1);
 
 }
 
@@ -2022,4 +2085,8 @@ void XiaStarterWindow::detComboBox(int choice){
         case 2: xs->showDets=2;
                 break;
     }
+}
+
+void XiaStarterWindow::setTerminalCheck(bool check){
+    collectorTerminal=check;
 }

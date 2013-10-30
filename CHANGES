@@ -1,4 +1,18 @@
 ************************
+xs0.3.6 to xs0.4
+************************
+
+"Listmode Run"-tab:
+	- new check box called "terminalCheck" is now available; once this check box is checked the collector will be started in a xterm; so one can see the stdout of the collector during the run
+	- if terminalCheck is checked, the kill and the stop button will now get the pid of the collector via "pidof" and write it into a file ~/.xs/pidCol; XiaStarter will then read the pid out of the file and initiate a kill process for the collector before the xterm process will be killed
+	- running the collector in xterm and killing it can cause problems with the daq: just reboot and re-setup the daq will help to overcome this problem!
+	
+"Listmode View"-tab:
+	- the "viewTemp"-file will be now also stored in the ~/.xs/ directory 
+	- there is still a problem with hdtv
+
+
+************************
 xs0.3.5 to xs0.3.6
 ************************
 

@@ -62,6 +62,7 @@ class XiaStarterWindow : public QMainWindow
     Q_OBJECT
     
 public:
+    bool collectorTerminal;
     QString version;
     QPalette green1;
     QPalette green2;
@@ -95,6 +96,8 @@ public slots:
 
     
 private slots:
+    void setTerminalCheck(bool);
+
     void removeFile();
 
     void sourceconf_clicked();
