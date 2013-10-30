@@ -5,6 +5,7 @@ xs0.3.6 to xs0.4
 Gerneral:
 	- scope and mb_sample are now implemented
 	- scope button is enabled
+	- Fixed Bug which produced a segmentation fault at the start of the program (linking to NULL pointer)
 
 "Listmode Run"-tab:
 	- new check box called "terminalCheck" is now available; once this check box is checked the collector will be started in a xterm; so one can see the stdout of the collector during the run
