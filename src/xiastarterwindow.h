@@ -90,6 +90,7 @@ public slots:
     void prefTabChanged(int);
     void ratesContextMenuRequest(QPoint);
     void radioChanged(bool check);
+    void scope(bool scopeIsOn);
 
 
 

@@ -60,6 +60,9 @@
 XiaStarter::XiaStarter(QObject *parent) :
     QObject(parent)
 {
+#ifdef debug
+    qDebug() << "construct XiaStarter!";
+#endif
 	//Getting environment variables
     QString configDir(getenv("MB_CONFIG_DIR"));
     sourceConfPath = configDir+"/source.conf";
@@ -96,6 +99,7 @@ XiaStarter::XiaStarter(QObject *parent) :
 
     mcaRates=0;
 	showDets=0;
+    scopeIsOn=false;
 
 	//reading xs.cal
     readCalList();
@@ -2077,3 +2081,46 @@ void XiaStarter::showStdtErrorBox(){
     }
 }
 
+void XiaStarter::startScope(){
+    if(runStopped){
+        QInputDialog *dialog=new QInputDialog;
+        QStringList items;
+
+        for(unsigned int i=0; i < detnames.size(); i++){
+            items.push_back(detnames.at(i));
+        }
+
+        dialog->setComboBoxItems(items);
+        dialog->setWindowTitle("Show mb_sample via scope");
+        dialog->setLabelText("Choose the detector for which you want to see the signals!");
+        int ret=dialog->exec();
+
+        if(ret == QDialog::Accepted){
+            scopeIsOn=true;
+            emit scopeRuns(scopeIsOn);
+            QProcess *scope=new QProcess(this);
+            QProcess *sample=new QProcess(this);
+            QString scopeCmd="scope 0";
+            QString sampleCmd="mb_sample ";
+            sampleCmd+=dialog->textValue();
+            connect(scope, SIGNAL(finished(int)), this, SLOT(scopeSlot(int)));
+            connect(scope, SIGNAL(finished(int)), sample, SLOT(kill()));
+            scope->start(scopeCmd);
+            scope->waitForStarted(-1);
+            sample->start(sampleCmd);
+            sample->waitForStarted(-1);
+        }
+    }
+    else{
+        QString message="Data acquisition is running! Cannot start scope while there is a active listmoderun-process!";
+        QMessageBox msgBox;
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.setText(message);
+        msgBox.exec();
+    }
+}
+
+void XiaStarter::scopeSlot(int code){
+    scopeIsOn=false;
+    emit scopeRuns(scopeIsOn);
+}

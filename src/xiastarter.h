@@ -74,6 +74,7 @@ public:
     bool ftimeradio;
     bool tvradio;
     bool hdtvradio;
+    bool scopeIsOn;
 
     int mcaCrate;
     int mcaTime;
@@ -104,9 +105,12 @@ signals:
     void newShowRates(QString);
     void copyingMODFiles(bool);
     void copyingMCAFiles(bool);
+    void scopeRuns(bool);
 
     
 public slots:
+
+    void scopeSlot(int);
 
     void copyDGFsetups();
 
@@ -172,6 +176,8 @@ public slots:
     void getMCARates(QString);
 
     void showStdtErrorBox();
+
+    void startScope();
 
 
 

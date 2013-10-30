@@ -53,11 +53,16 @@
 #include <mfile.h>
 #include <QPen>
 #include "dgfconfig.h"
+//#define debug
 
 XiaStarterWindow::XiaStarterWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::XiaStarterWindow)
 {
+#ifdef debug
+    qDebug() << "Konstruiere XiaStarterWindow";
+    qDebug() << "Creating temporary file!";
+#endif
     version="0.4";
     QString home, xsFile;
     home=getenv("HOME");
@@ -68,6 +73,9 @@ XiaStarterWindow::XiaStarterWindow(QWidget *parent) :
     file.write(content.toAscii());
     file.close();
 
+#ifdef debug
+    qDebug() << "Getting environment variables!";
+#endif
 
     QString configDir(getenv("MB_CONFIG_DIR"));
     sourceConfPath = configDir+"/source.conf";
@@ -75,6 +83,9 @@ XiaStarterWindow::XiaStarterWindow(QWidget *parent) :
     QString histDir(getenv("HW_HIST_DIR"));
     hwHistDir=histDir+"/";
 
+#ifdef debug
+    qDebug() << "Adjusting the user interface!";
+#endif
     //Some UI-Stuff
     ui->setupUi(this);    
     ui->tabWidget->setCurrentIndex(0);
@@ -97,19 +108,24 @@ XiaStarterWindow::XiaStarterWindow(QWidget *parent) :
     ui->detCombo->addItem("Germaniums");
     ui->detCombo->addItem("Silicons");
     ui->plotRatesCheck->setEnabled(0);
-    ui->scopeButton->setEnabled(0);
+    //ui->scopeButton->setEnabled(0);
     ui->tvRadio->setChecked(true);
     ui->hdtvRadio->setChecked(false);
-    xs->hdtvradio=false;
-    xs->tvradio=true;
     ui->terminalCheck->setChecked(false);
     collectorTerminal=false;
+
+#ifdef debug
+    qDebug() << "Connecting signals and slots for tv, hdtv, and terminal!";
+#endif
 
     connect(ui->tvRadio, SIGNAL(toggled(bool)), this, SLOT(radioChanged(bool)));
     connect(ui->hdtvRadio, SIGNAL(toggled(bool)), this, SLOT(radioChanged(bool)));
     connect(ui->terminalCheck, SIGNAL(clicked(bool)), this, SLOT(setTerminalCheck(bool)));
 
 
+#ifdef debug
+    qDebug() << "Adjusting mcaPlot!";
+#endif
     //mcaPlot Settings
     ui->mcaPlot->setRangeDrag(Qt::Vertical| Qt::Horizontal);
     ui->mcaPlot->setRangeZoom(Qt::Vertical| Qt::Horizontal);
@@ -122,6 +138,9 @@ XiaStarterWindow::XiaStarterWindow(QWidget *parent) :
 
     showRatesFor=0;
 
+#ifdef debug
+    qDebug() << "Adjusting ratesPlot!";
+#endif
     //ratesPlot settings
     ui->ratesPlot->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->ratesPlot, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(ratesContextMenuRequest(QPoint)));
@@ -136,6 +155,9 @@ XiaStarterWindow::XiaStarterWindow(QWidget *parent) :
     ui->ratesPlot->legend->setMargin(10,10,0,1);
 
 
+#ifdef debug
+    qDebug() << "Setting up LoadMenu!";
+#endif
     //setting up LoadMenu manually
     defaultAction = new QAction(tr("Default Settings"), this);
     defaultAction->setShortcut(Qt::CTRL + Qt::Key_D);
@@ -152,6 +174,9 @@ XiaStarterWindow::XiaStarterWindow(QWidget *parent) :
     loadMenu->addAction(lastAction);
     loadMenu->addAction(loadFileAction);
 
+#ifdef debug
+    qDebug() << "Setting up SaveMenu!";
+#endif
     //setting up SaveMenue
     saveAction = new QAction(tr("Save ..."), this);
     saveAction->setShortcut(Qt::CTRL + Qt::Key_S);
@@ -167,6 +192,9 @@ XiaStarterWindow::XiaStarterWindow(QWidget *parent) :
     saveAction->setEnabled(0);
 
     
+#ifdef debug
+    qDebug() << "Connecting menu entries with functions!";
+#endif
     //connect menu entries with functions
     connect(ui->actionSource_conf,SIGNAL (triggered()), this, SLOT(sourceconf_clicked()));
     connect(ui->actionDgf_config,SIGNAL (triggered()), this, SLOT(dgfconf_clicked()));
@@ -178,10 +206,19 @@ XiaStarterWindow::XiaStarterWindow(QWidget *parent) :
     connect(ui->ftimeRadio, SIGNAL(toggled(bool)), ui->mcaTimeBox, SLOT(setEnabled(bool)));
     connect(ui->detCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(detComboBox(int)));
 
+#ifdef debug
+    qDebug() << "Create instance of xiaStarter!";
+#endif
     xs = new XiaStarter(this);
     changeStatus(2);
-
+    xs->hdtvradio=false;
+    xs->tvradio=true;
+#ifdef debug
+    qDebug() << "Connecting Signals and Slots between xiaStarter and Window!";
+#endif
     //Connections between SIGNALS and SLOTS with the xiastarter class
+    connect(ui->scopeButton, SIGNAL(clicked()), xs, SLOT(startScope()));
+    connect(xs, SIGNAL(scopeRuns(bool)), this, SLOT(scope(bool)));
     connect(ui->runBox, SIGNAL(valueChanged(int)), xs, SLOT(setRunNum(int)));
     connect(ui->subrunBox, SIGNAL(valueChanged(int)), xs, SLOT(setSubrunNum(int)));
     connect(ui->prefixLine, SIGNAL(textChanged(QString)), xs, SLOT(setPrefix(QString)));
@@ -1471,6 +1508,7 @@ void XiaStarterWindow::showInfo(){
 void XiaStarterWindow::viewButtons(bool b){
     ui->latestButton->setEnabled(b);
     ui->allButton->setEnabled(b);
+    ui->subrunsButton->setEnabled(b);
 }
 
 void XiaStarterWindow::on_mcaSaveButton_clicked()
@@ -2091,4 +2129,13 @@ void XiaStarterWindow::detComboBox(int choice){
 
 void XiaStarterWindow::setTerminalCheck(bool check){
     collectorTerminal=check;
+}
+
+void XiaStarterWindow::scope(bool scopeIsOn){
+    if(scopeIsOn){
+        ui->tab->setEnabled(0);
+    }
+    else{
+        ui->tab->setEnabled(1);
+    }
 }
