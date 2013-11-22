@@ -1,18 +1,30 @@
 ************************
+xs0.4 to xs0.4.1
+************************
+
+"MCA Run"-tab:
+
+	- Timelimit for fixed-time MCA run was increased to 86400=3600*24
+		
+
+************************
 xs0.3.6 to xs0.4
 ************************
 
 Gerneral:
+
 	- scope and mb_sample are now implemented
 	- scope button is enabled
 	- Fixed Bug which produced a segmentation fault at the start of the program (linking to NULL pointer)
 
 "Listmode Run"-tab:
+
 	- new check box called "terminalCheck" is now available; once this check box is checked the collector will be started in a xterm; so one can see the stdout of the collector during the run
 	- if terminalCheck is checked, the kill and the stop button will now get the pid of the collector via "pidof" and write it into a file ~/.xs/pidCol; XiaStarter will then read the pid out of the file and initiate a kill process for the collector before the xterm process will be killed
 	- running the collector in xterm and killing it can cause problems with the daq: just reboot and re-setup the daq will help to overcome this problem!
 	
 "Listmode View"-tab:
+
 	- the "viewTemp"-file will be now also stored in the ~/.xs/ directory 
 	- Fixed problem with hdtv
 	- bool-variables for hdtv and tv of the xiaStarter-class are now initalized in the constructor of the xiaStarterWindow-class
@@ -24,12 +36,15 @@ xs0.3.5 to xs0.3.6
 ************************
 
 General:
+
 	- removed residual dgf_show output ... is now only visible if "debug" is defined
 
 "Rates-Plot"-tab:
+
 	- limit of for-loop was reduced to ratestime.size()-1 in order to get rid of the error that the last element of rates.at(j).at(i) does not exist
 
 "Listmode View"-tab:
+
 	- experimentator can now choose between tv and hdtv 
 
 
@@ -38,6 +53,7 @@ Patch xs0.3.4 to xs0.3.5
 ************************
 
 General:
+
 	- added LICENSE file
 	- added LICENSE and COPYRIGHT note to every file of the source code 
 	- version number is now in the XiaStarterWindow-title
@@ -51,10 +67,12 @@ General:
 	- added Date to the log-output: "[date|time] text" 
 
 "Rates Plot"-tab:
+
 	- fixed ratestime bug; rates will only be plotted if there are at least three data points
 	- the ratesPlot will now only show the last 1000 seconds of data
 
 "Info"-tab:
+
 	- version number has been removed
 
 ************************
@@ -62,6 +80,7 @@ Patch xs0.3.3 to xs0.3.4
 ************************
 
 General:
+
 	- fixed crash bug by applying security changes to all <vectors> (Problem: ratestime.size() still exists but won't lead to crashes now)
 	- new dgfConfig-widget
 	- new function to visualize the last two subruns of a detector
@@ -73,6 +92,7 @@ General:
 	- starting xiaStarter normally it will show a MessageBox if there is still a ".xs"-file in the home directory
 
 "Listmode View"-tab:
+
 	- new button "view last two subruns" is functional now and will show a Messagebox where the user can choose which detector he/she wants to see
 
 ************************

@@ -63,7 +63,7 @@ XiaStarterWindow::XiaStarterWindow(QWidget *parent) :
     qDebug() << "Konstruiere XiaStarterWindow";
     qDebug() << "Creating temporary file!";
 #endif
-    version="0.4";
+    version="0.4.1";
     QString home, xsFile;
     home=getenv("HOME");
     xsFile=home+"/.xs/.xs";
