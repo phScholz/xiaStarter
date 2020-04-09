@@ -1,63 +1,243 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by Qt Creator 2.6.2, 2013-10-29T16:16:23. -->
 <qtcreator>
  <data>
-  <variable>ProjectExplorer.Project.ActiveTarget</variable>
-  <value type="int">-1</value>
+  <variable>RunConfiguration0-BaseEnvironmentBase</variable>
+  <value type="int">2</value>
  </data>
  <data>
-  <variable>ProjectExplorer.Project.EditorSettings</variable>
-  <valuemap type="QVariantMap">
-   <value type="bool" key="EditorConfiguration.AutoIndent">true</value>
-   <value type="bool" key="EditorConfiguration.AutoSpacesForTabs">false</value>
-   <value type="bool" key="EditorConfiguration.CamelCaseNavigation">true</value>
-   <valuemap type="QVariantMap" key="EditorConfiguration.CodeStyle.0">
-    <value type="QString" key="language">Cpp</value>
-    <valuemap type="QVariantMap" key="value">
-     <value type="QString" key="CurrentPreferences">CppGlobal</value>
-    </valuemap>
-   </valuemap>
-   <valuemap type="QVariantMap" key="EditorConfiguration.CodeStyle.1">
-    <value type="QString" key="language">QmlJS</value>
-    <valuemap type="QVariantMap" key="value">
-     <value type="QString" key="CurrentPreferences">QmlJSGlobal</value>
-    </valuemap>
-   </valuemap>
-   <value type="int" key="EditorConfiguration.CodeStyle.Count">2</value>
-   <value type="QByteArray" key="EditorConfiguration.Codec">UTF-8</value>
-   <value type="bool" key="EditorConfiguration.ConstrainTooltips">false</value>
-   <value type="int" key="EditorConfiguration.IndentSize">4</value>
-   <value type="bool" key="EditorConfiguration.KeyboardTooltips">false</value>
-   <value type="bool" key="EditorConfiguration.MouseNavigation">true</value>
-   <value type="int" key="EditorConfiguration.PaddingMode">1</value>
-   <value type="bool" key="EditorConfiguration.ScrollWheelZooming">true</value>
-   <value type="int" key="EditorConfiguration.SmartBackspaceBehavior">0</value>
-   <value type="bool" key="EditorConfiguration.SpacesForTabs">true</value>
-   <value type="int" key="EditorConfiguration.TabKeyBehavior">0</value>
-   <value type="int" key="EditorConfiguration.TabSize">8</value>
-   <value type="bool" key="EditorConfiguration.UseGlobal">true</value>
-   <value type="int" key="EditorConfiguration.Utf8BomBehavior">1</value>
-   <value type="bool" key="EditorConfiguration.addFinalNewLine">true</value>
-   <value type="bool" key="EditorConfiguration.cleanIndentation">true</value>
-   <value type="bool" key="EditorConfiguration.cleanWhitespace">true</value>
-   <value type="bool" key="EditorConfiguration.inEntireDocument">false</value>
-  </valuemap>
+  <variable>RunConfiguration0-CommandLineArguments</variable>
+  <valuelist type="QVariantList"/>
  </data>
  <data>
-  <variable>ProjectExplorer.Project.PluginSettings</variable>
-  <valuemap type="QVariantMap"/>
+  <variable>RunConfiguration0-ProFile</variable>
+  <value type="QString">XiaStarter.pro</value>
  </data>
  <data>
-  <variable>ProjectExplorer.Project.TargetCount</variable>
+  <variable>RunConfiguration0-RunConfiguration.name</variable>
+  <value type="QString">XiaStarter</value>
+ </data>
+ <data>
+  <variable>RunConfiguration0-UseDyldImageSuffix</variable>
+  <value type="bool">false</value>
+ </data>
+ <data>
+  <variable>RunConfiguration0-UseTerminal</variable>
+  <value type="bool">false</value>
+ </data>
+ <data>
+  <variable>RunConfiguration0-UserEnvironmentChanges</variable>
+  <valuelist type="QVariantList"/>
+ </data>
+ <data>
+  <variable>RunConfiguration0-UserSetName</variable>
+  <value type="bool">false</value>
+ </data>
+ <data>
+  <variable>RunConfiguration0-UserSetWorkingDirectory</variable>
+  <value type="bool">false</value>
+ </data>
+ <data>
+  <variable>RunConfiguration0-UserWorkingDirectory</variable>
+  <value type="QString"></value>
+ </data>
+ <data>
+  <variable>RunConfiguration0-type</variable>
+  <value type="QString">Qt4ProjectManager.Qt4RunConfiguration</value>
+ </data>
+ <data>
+  <variable>activeRunConfiguration</variable>
   <value type="int">0</value>
  </data>
  <data>
-  <variable>ProjectExplorer.Project.Updater.EnvironmentId</variable>
-  <value type="QString">{4dd0e613-2c7c-4317-94ea-197c4267b27c}</value>
+  <variable>activebuildconfiguration</variable>
+  <value type="QString">Release</value>
  </data>
  <data>
-  <variable>ProjectExplorer.Project.Updater.FileVersion</variable>
-  <value type="int">12</value>
+  <variable>buildConfiguration-Release</variable>
+  <valuemap type="QVariantMap">
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Release</value>
+   <value key="QtVersionId" type="int">3</value>
+   <value key="ToolChain" type="int">0</value>
+   <value key="buildConfiguration" type="int">0</value>
+  </valuemap>
+ </data>
+ <data>
+  <variable>buildconfiguration-Release-buildstep0</variable>
+  <valuemap type="QVariantMap">
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Release</value>
+   <valuelist key="abstractProcess.Environment" type="QVariantList">
+    <value type="QString">BUFFER_DIR=/home/experiment/mb/buffers</value>
+    <value type="QString">DGF_CALIB_DIR=/home/experiment/mb/dgf_calibration</value>
+    <value type="QString">DGF_SETUPS_DIR=/home/experiment/mb/dgf_setups</value>
+    <value type="QString">DISPLAY=localhost:14.0</value>
+    <value type="QString">DSPPARNAMEFILE=/home/experiment/xia_firmware/xia-130710/DGFcodeF.var</value>
+    <value type="QString">DSP_F=/home/experiment/xia_firmware/xia-130710/DGFcodeF.bin</value>
+    <value type="QString">FIPPIFPGA_F=/usr/share/dgf/fippi_fpga_code/4C_4_4_0/pixie.bin</value>
+    <value type="QString">GEM_HOME=/home/experiment/.rvm/gems/ruby-2.0.0-p247</value>
+    <value type="QString">GEM_PATH=/home/experiment/.rvm/gems/ruby-2.0.0-p247:/home/experiment/.rvm/gems/ruby-2.0.0-p247@global</value>
+    <value type="QString">HOME=/home/experiment</value>
+    <value type="QString">HW_HIST_DIR=/home/experiment/mb/hw_hist</value>
+    <value type="QString">IRBRC=/home/experiment/.rvm/rubies/ruby-2.0.0-p247/.irbrc</value>
+    <value type="QString">LANG=en_US.UTF-8</value>
+    <value type="QString">LANGUAGE=</value>
+    <value type="QString">LD_LIBRARY_PATH=/usr/lib/qtcreator</value>
+    <value type="QString">LESSCLOSE=/usr/bin/lesspipe %s %s</value>
+    <value type="QString">LESSOPEN=| /usr/bin/lesspipe %s</value>
+    <value type="QString">LOGNAME=experiment</value>
+    <value type="QString">LS_COLORS=rs=0:di=01;34:ln=01;36:hl=44;37:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.lzma=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.bz2=01;31:*.bz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.rar=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.axv=01;35:*.anx=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.axa=00;36:*.oga=00;36:*.spx=00;36:*.xspf=00;36:</value>
+    <value type="QString">MAIL=/var/mail/experiment</value>
+    <value type="QString">MB_BASENAME=test1_</value>
+    <value type="QString">MB_CONFIG_DIR=/home/experiment/mb/config</value>
+    <value type="QString">MB_DIRECTORY=/home/experiment/mb/data</value>
+    <value type="QString">MY_RUBY_HOME=/home/experiment/.rvm/rubies/ruby-2.0.0-p247</value>
+    <value type="QString">OLDPWD=/home/experiment/XiaStarter</value>
+    <value type="QString">PATH=/usr/bin:/home/experiment/bin:/home/experiment/.rvm/gems/ruby-2.0.0-p247/bin:/home/experiment/.rvm/gems/ruby-2.0.0-p247@global/bin:/home/experiment/.rvm/rubies/ruby-2.0.0-p247/bin:/home/experiment/.rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/home/experiment/.rvm/bin</value>
+    <value type="QString">PWD=/home/experiment/XiaStarter/xiaStarter-0.5</value>
+    <value type="QString">QTDIR=/usr/share/qt4</value>
+    <value type="QString">RUBY_VERSION=ruby-2.0.0-p247</value>
+    <value type="QString">SCOPE_DIR=/tmp</value>
+    <value type="QString">SHELL=/bin/bash</value>
+    <value type="QString">SHLVL=1</value>
+    <value type="QString">SSH_CLIENT=134.95.191.145 36858 22</value>
+    <value type="QString">SSH_CONNECTION=134.95.191.145 36858 134.95.192.33 22</value>
+    <value type="QString">SSH_TTY=/dev/pts/6</value>
+    <value type="QString">SW_HIST_DIR=/home/experiment/mb/sw_hist</value>
+    <value type="QString">SYSFPGA_F=/usr/share/dgf/system_fpga_code/4C_4_4_0/sysdgfrevf.bin</value>
+    <value type="QString">TERM=xterm</value>
+    <value type="QString">USER=experiment</value>
+    <value type="QString">XDG_SESSION_COOKIE=4933d32542fa0096536856a54e2d3e23-1477920003.577370-1707202727</value>
+    <value type="QString">_=/usr/bin/qtcreator</value>
+    <value type="QString">rvm_bin_path=/home/experiment/.rvm/bin</value>
+    <value type="QString">rvm_path=/home/experiment/.rvm</value>
+    <value type="QString">rvm_prefix=/home/experiment</value>
+    <value type="QString">rvm_version=1.22.3 (stable)</value>
+   </valuelist>
+   <valuelist key="abstractProcess.arguments" type="QVariantList">
+    <value type="QString">/home/experiment/XiaStarter/xiaStarter-0.5/XiaStarter.pro</value>
+    <value type="QString">-spec</value>
+    <value type="QString">linux-g++</value>
+    <value type="QString">-r</value>
+   </valuelist>
+   <value key="abstractProcess.command" type="QString">/usr/bin/qmake</value>
+   <value key="abstractProcess.enabled" type="bool">false</value>
+   <value key="abstractProcess.workingDirectory" type="QString">/home/experiment/XiaStarter/xiaStarter-0.5</value>
+  </valuemap>
+ </data>
+ <data>
+  <variable>buildconfiguration-Release-buildstep1</variable>
+  <valuemap type="QVariantMap">
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Release</value>
+   <valuelist key="abstractProcess.Environment" type="QVariantList">
+    <value type="QString">BUFFER_DIR=/home/experiment/mb/buffers</value>
+    <value type="QString">DGF_CALIB_DIR=/home/experiment/mb/dgf_calibration</value>
+    <value type="QString">DGF_SETUPS_DIR=/home/experiment/mb/dgf_setups</value>
+    <value type="QString">DISPLAY=localhost:14.0</value>
+    <value type="QString">DSPPARNAMEFILE=/home/experiment/xia_firmware/xia-130710/DGFcodeF.var</value>
+    <value type="QString">DSP_F=/home/experiment/xia_firmware/xia-130710/DGFcodeF.bin</value>
+    <value type="QString">FIPPIFPGA_F=/usr/share/dgf/fippi_fpga_code/4C_4_4_0/pixie.bin</value>
+    <value type="QString">GEM_HOME=/home/experiment/.rvm/gems/ruby-2.0.0-p247</value>
+    <value type="QString">GEM_PATH=/home/experiment/.rvm/gems/ruby-2.0.0-p247:/home/experiment/.rvm/gems/ruby-2.0.0-p247@global</value>
+    <value type="QString">HOME=/home/experiment</value>
+    <value type="QString">HW_HIST_DIR=/home/experiment/mb/hw_hist</value>
+    <value type="QString">IRBRC=/home/experiment/.rvm/rubies/ruby-2.0.0-p247/.irbrc</value>
+    <value type="QString">LANG=en_US.UTF-8</value>
+    <value type="QString">LANGUAGE=</value>
+    <value type="QString">LD_LIBRARY_PATH=/usr/lib/qtcreator</value>
+    <value type="QString">LESSCLOSE=/usr/bin/lesspipe %s %s</value>
+    <value type="QString">LESSOPEN=| /usr/bin/lesspipe %s</value>
+    <value type="QString">LOGNAME=experiment</value>
+    <value type="QString">LS_COLORS=rs=0:di=01;34:ln=01;36:hl=44;37:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.lzma=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.bz2=01;31:*.bz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.rar=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.axv=01;35:*.anx=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.axa=00;36:*.oga=00;36:*.spx=00;36:*.xspf=00;36:</value>
+    <value type="QString">MAIL=/var/mail/experiment</value>
+    <value type="QString">MB_BASENAME=test1_</value>
+    <value type="QString">MB_CONFIG_DIR=/home/experiment/mb/config</value>
+    <value type="QString">MB_DIRECTORY=/home/experiment/mb/data</value>
+    <value type="QString">MY_RUBY_HOME=/home/experiment/.rvm/rubies/ruby-2.0.0-p247</value>
+    <value type="QString">OLDPWD=/home/experiment/XiaStarter</value>
+    <value type="QString">PATH=/usr/bin:/home/experiment/bin:/home/experiment/.rvm/gems/ruby-2.0.0-p247/bin:/home/experiment/.rvm/gems/ruby-2.0.0-p247@global/bin:/home/experiment/.rvm/rubies/ruby-2.0.0-p247/bin:/home/experiment/.rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/home/experiment/.rvm/bin</value>
+    <value type="QString">PWD=/home/experiment/XiaStarter/xiaStarter-0.5</value>
+    <value type="QString">QTDIR=/usr/share/qt4</value>
+    <value type="QString">RUBY_VERSION=ruby-2.0.0-p247</value>
+    <value type="QString">SCOPE_DIR=/tmp</value>
+    <value type="QString">SHELL=/bin/bash</value>
+    <value type="QString">SHLVL=1</value>
+    <value type="QString">SSH_CLIENT=134.95.191.145 36858 22</value>
+    <value type="QString">SSH_CONNECTION=134.95.191.145 36858 134.95.192.33 22</value>
+    <value type="QString">SSH_TTY=/dev/pts/6</value>
+    <value type="QString">SW_HIST_DIR=/home/experiment/mb/sw_hist</value>
+    <value type="QString">SYSFPGA_F=/usr/share/dgf/system_fpga_code/4C_4_4_0/sysdgfrevf.bin</value>
+    <value type="QString">TERM=xterm</value>
+    <value type="QString">USER=experiment</value>
+    <value type="QString">XDG_SESSION_COOKIE=4933d32542fa0096536856a54e2d3e23-1477920003.577370-1707202727</value>
+    <value type="QString">_=/usr/bin/qtcreator</value>
+    <value type="QString">rvm_bin_path=/home/experiment/.rvm/bin</value>
+    <value type="QString">rvm_path=/home/experiment/.rvm</value>
+    <value type="QString">rvm_prefix=/home/experiment</value>
+    <value type="QString">rvm_version=1.22.3 (stable)</value>
+   </valuelist>
+   <value key="abstractProcess.IgnoreReturnValue" type="bool">false</value>
+   <valuelist key="abstractProcess.arguments" type="QVariantList">
+    <value type="QString">-w</value>
+   </valuelist>
+   <value key="abstractProcess.command" type="QString">/usr/bin/make</value>
+   <value key="abstractProcess.enabled" type="bool">true</value>
+   <value key="abstractProcess.workingDirectory" type="QString">/home/experiment/XiaStarter/xiaStarter-0.5</value>
+  </valuemap>
+ </data>
+ <data>
+  <variable>buildconfiguration-Release-cleanstep0</variable>
+  <valuemap type="QVariantMap">
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Release</value>
+   <value key="cleanConfig" type="bool">true</value>
+   <valuelist key="makeargs" type="QVariantList">
+    <value type="QString">clean</value>
+   </valuelist>
+  </valuemap>
+ </data>
+ <data>
+  <variable>buildconfigurations</variable>
+  <valuelist type="QVariantList">
+   <value type="QString">Release</value>
+  </valuelist>
+ </data>
+ <data>
+  <variable>buildstep0</variable>
+  <valuemap type="QVariantMap">
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString"></value>
+   <value key="mkspec" type="QString"></value>
+  </valuemap>
+ </data>
+ <data>
+  <variable>buildstep1</variable>
+  <valuemap type="QVariantMap">
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString"></value>
+  </valuemap>
+ </data>
+ <data>
+  <variable>buildsteps</variable>
+  <valuelist type="QVariantList">
+   <value type="QString">trolltech.qt4projectmanager.qmake</value>
+   <value type="QString">trolltech.qt4projectmanager.make</value>
+  </valuelist>
+ </data>
+ <data>
+  <variable>cleanstep0</variable>
+  <valuemap type="QVariantMap">
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString"></value>
+   <value key="clean" type="bool">true</value>
+  </valuemap>
+ </data>
+ <data>
+  <variable>cleansteps</variable>
+  <valuelist type="QVariantList">
+   <value type="QString">trolltech.qt4projectmanager.make</value>
+  </valuelist>
+ </data>
+ <data>
+  <variable>defaultFileEncoding</variable>
+  <value type="QByteArray">System</value>
+ </data>
+ <data>
+  <variable>project</variable>
+  <valuemap type="QVariantMap"/>
  </data>
 </qtcreator>
